@@ -8,5 +8,8 @@
         x:Class="StardewValleyManager.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="StardewValleyManager">
-        <views:MainView />
+
+	<Grid ColumnDefinitions="1*,Auto">
+	    <views:SavesView x:Name="SaveFiles"/>
+	</Grid>
 </Window>
