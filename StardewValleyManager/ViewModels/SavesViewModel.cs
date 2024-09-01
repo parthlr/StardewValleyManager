@@ -9,7 +9,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Octokit;
 
 namespace StardewValleyManager.ViewModels;
@@ -18,6 +20,11 @@ public partial class SavesViewModel : ObservableObject
 
     [ObservableProperty]
     private ObservableCollection<SaveInfo> _saves = [];
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(CommitAllSavesCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CommitSaveCommand))]
+    private bool _saving = false;
 
     GitUtil git;
 
@@ -28,8 +35,6 @@ public partial class SavesViewModel : ObservableObject
         git = GitUtil.Instance;
         git.Authenticate();
         git.CheckAndCreateRepository("test-repo2");
-
-        git.CommitAllSaves(Saves.ToArray());
     }
 
     private void LoadSaveLocations(string rootDir)
@@ -47,15 +52,63 @@ public partial class SavesViewModel : ObservableObject
 
     }
 
+    [RelayCommand(CanExecute = nameof(CanCommitSave))]
+    private async Task CommitAllSaves()
+    {
+        Saving = true;
+
+        await git.CommitAllSaves(Saves.ToArray());
+
+        Saving = false;
+    }
+
+    [RelayCommand(CanExecute = nameof(CanCommitSave))]
+    private async Task CommitSave(string SaveName)
+    {
+        Saving = true;
+
+        await git.CommitSaveFolder(SaveName);
+
+        Saving = false;
+    }
+
+    private bool CanCommitSave() => !Saving;
+
 }
 
-public partial class SaveInfo(string name, string date) : ObservableObject
+public partial class SaveInfo : ObservableObject
 {
     [ObservableProperty]
-    private string _name = name;
+    private string _name = "";
 
     [ObservableProperty]
-    private string _date = date;
+    private string _date = "";
+
+    [ObservableProperty]
+    private string _farmName = "";
+
+    public SaveInfo(string name, string date)
+    {
+        Name = name;
+        Date = date;
+
+        LoadFarmName();
+    }
+
+    private void LoadFarmName()
+    {
+        int underscoreIndex = Name.Length - 1;
+        for (int i = Name.Length - 1; i >= 0; i--)
+        {
+            if (Name[i] == '_')
+            {
+                underscoreIndex = i;
+                break;
+            }
+        }
+
+        FarmName = Name[..underscoreIndex];
+    }
 
 }
 
@@ -136,7 +189,7 @@ public class GitUtil
         }
     }
 
-    public async void CommitAllSaves(SaveInfo[] Saves)
+    public async Task CommitAllSaves(SaveInfo[] Saves)
     {
         foreach (SaveInfo save in Saves)
         {
@@ -163,6 +216,23 @@ public class GitUtil
         return newCommit;
     }
 
+    public async Task<IReadOnlyList<GitHubCommit>> GetCommitHistory(string RepositoryName, string SaveName)
+    {
+        CommitRequest commitRequest = new CommitRequest { Path = $"{SaveName}/{SaveName}" };
+        IReadOnlyList<GitHubCommit> commits = await Client.Repository.Commit.GetAll(User, RepositoryName, commitRequest);
+
+        return commits;
+    }
+
+    public async Task<string> GetCommitContent(string RepositoryName, string FileName, string Sha)
+    {
+        IReadOnlyList<RepositoryContent> content = await Client.Repository.Content.GetAllContentsByRef(User, RepositoryName, FileName, Sha);
+
+        string contentString = content[0].Content;
+
+        return contentString;
+    }
+
     private async Task<Commit> GetLatestCommit(string RepositoryName)
     {
         string branchHead = "heads/master";
@@ -175,7 +245,10 @@ public class GitUtil
 
     private async Task<BlobReference> CreateFileBlob(string RepositoryName, string FileName)
     {
-        string fileContent = File.ReadAllText(FileName);
+        string currentDate = DateTime.Now.ToString(new CultureInfo("en-US"));
+        string fileHeader = $"<!--{currentDate}-->";
+
+        string fileContent = fileHeader + File.ReadAllText(FileName);
 
         NewBlob fileBlob = new NewBlob { Encoding = EncodingType.Utf8, Content = fileContent };
         BlobReference blobReference = await Client.Git.Blob.Create(User, RepositoryName, fileBlob);

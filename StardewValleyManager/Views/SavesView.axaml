@@ -13,22 +13,31 @@
         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:SavesViewModel />
     </Design.DataContext>
-	
-	<ItemsControl ItemsSource="{Binding Saves}"
+	<Grid ColumnDefinitions="*,Auto">
+	    <StackPanel Spacing="10">
+	        <ItemsControl ItemsSource="{Binding Saves}"
                           Name="ItemsControl"
                           ClipToBounds="False">
-		<ItemsControl.ItemTemplate>
-            <DataTemplate>
-                <ui:SettingsExpander Header="{Binding Name}"
-                                     Description="{Binding Date}"
-                                     IsClickEnabled="True"
-                                     ClipToBounds="False">
+		        <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ui:SettingsExpander Header="{Binding FarmName}"
+                                             Description="{Binding Date}"
+                                             IsClickEnabled="False"
+                                             ClipToBounds="False">
+						    <ui:SettingsExpander.Footer>
+						        <Button Content="Save"
+									    Command="{Binding $parent[StackPanel].((vm:SavesViewModel)DataContext).CommitSaveCommand}"
+						                CommandParameter="{Binding Name}"/>
+						    </ui:SettingsExpander.Footer>
                             
-                </ui:SettingsExpander>
-            </DataTemplate>
-        </ItemsControl.ItemTemplate>
-	
-	</ItemsControl>
-	
+                        </ui:SettingsExpander>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+	        </ItemsControl>
+		
+	        <Button Content="Save All"
+				    Command="{Binding CommitAllSavesCommand}" />
+	    </StackPanel>
+	</Grid>
     
 </UserControl>

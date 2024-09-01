@@ -9,7 +9,5 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="StardewValleyManager">
 
-	<Grid ColumnDefinitions="1*,Auto">
-	    <views:SavesView x:Name="SaveFiles"/>
-	</Grid>
+	<views:SavesView x:Name="SaveFiles"/>
 </Window>
