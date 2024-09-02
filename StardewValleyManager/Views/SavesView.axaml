@@ -25,8 +25,8 @@
                                              IsClickEnabled="False"
                                              ClipToBounds="False">
 						    <ui:SettingsExpander.Footer>
-						        <Button Content="Save"
-									    Command="{Binding $parent[StackPanel].((vm:SavesViewModel)DataContext).CommitSaveCommand}"
+									<Button Content="Load"
+									    Command="{Binding $parent[StackPanel].((vm:SavesViewModel)DataContext).LoadSaveFromCommitCommand}"
 						                CommandParameter="{Binding Name}"/>
 						    </ui:SettingsExpander.Footer>
                             

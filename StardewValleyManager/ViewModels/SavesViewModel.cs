@@ -24,6 +24,7 @@ public partial class SavesViewModel : ObservableObject
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CommitAllSavesCommand))]
     [NotifyCanExecuteChangedFor(nameof(CommitSaveCommand))]
+    [NotifyCanExecuteChangedFor(nameof(LoadSaveFromCommitCommand))]
     private bool _saving = false;
 
     GitUtil git;
@@ -73,6 +74,32 @@ public partial class SavesViewModel : ObservableObject
     }
 
     private bool CanCommitSave() => !Saving;
+
+    [RelayCommand(CanExecute = nameof(CanCommitSave))]
+    private async Task LoadSaveFromCommit(string SaveName)
+    {
+        Saving = true;
+
+        System.Diagnostics.Debug.WriteLine($"Getting content from commit for save file {SaveName}");
+
+        Commit latestCommit = await git.GetLatestCommit("test-repo2");
+
+        string commitContent = await git.GetCommitContent("test-repo2", $"{SaveName}/{SaveName}", latestCommit.Sha);
+
+        Directory.CreateDirectory($"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/StardewValley/Save_Backups");
+
+        string outputFilePath = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/StardewValley/Save_Backups/{SaveName}";
+
+        if (!string.IsNullOrEmpty(commitContent))
+        {
+            System.Diagnostics.Debug.WriteLine("Writing to file");
+            File.WriteAllText(outputFilePath, commitContent);
+        }
+
+        System.Diagnostics.Debug.WriteLine($"Finished saving local copy for {SaveName}");
+
+        Saving = false;
+    }
 
 }
 
@@ -224,16 +251,22 @@ public class GitUtil
         return commits;
     }
 
-    public async Task<string> GetCommitContent(string RepositoryName, string FileName, string Sha)
+    public async Task<string> GetCommitContent(string RepositoryName, string FileName, string CommitSha)
     {
-        IReadOnlyList<RepositoryContent> content = await Client.Repository.Content.GetAllContentsByRef(User, RepositoryName, FileName, Sha);
+        IReadOnlyList<RepositoryContent> content = await Client.Repository.Content.GetAllContentsByRef(User, RepositoryName, FileName, CommitSha);
 
-        string contentString = content[0].Content;
+        string fileSha = content[0].Sha;
 
-        return contentString;
+        Blob blob = await Client.Git.Blob.Get(User, RepositoryName, fileSha);
+        string blobContent = blob.Content;
+
+        byte[] rawTextData = Convert.FromBase64String(blobContent);
+        string decodedText = Encoding.UTF8.GetString(rawTextData);
+
+        return decodedText;
     }
 
-    private async Task<Commit> GetLatestCommit(string RepositoryName)
+    public async Task<Commit> GetLatestCommit(string RepositoryName)
     {
         string branchHead = "heads/master";
 
@@ -248,7 +281,7 @@ public class GitUtil
         string currentDate = DateTime.Now.ToString(new CultureInfo("en-US"));
         string fileHeader = $"<!--{currentDate}-->";
 
-        string fileContent = fileHeader + File.ReadAllText(FileName);
+        string fileContent = fileHeader + "\n" + File.ReadAllText(FileName);
 
         NewBlob fileBlob = new NewBlob { Encoding = EncodingType.Utf8, Content = fileContent };
         BlobReference blobReference = await Client.Git.Blob.Create(User, RepositoryName, fileBlob);
