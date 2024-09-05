@@ -3,6 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:StardewValleyManager.ViewModels"
+			 xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
+			 xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:ui="using:FluentAvalonia.UI.Controls"
              x:Class="StardewValleyManager.Views.SavesView"
@@ -13,31 +15,75 @@
         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:SavesViewModel />
     </Design.DataContext>
-	<Grid ColumnDefinitions="*,Auto">
-	    <StackPanel Spacing="10">
-	        <ItemsControl ItemsSource="{Binding Saves}"
-                          Name="ItemsControl"
+	<UserControl.Resources>
+		<ui:SymbolIconSource x:Key="GoIcon" Symbol="ChevronRight" />
+	</UserControl.Resources>
+	
+	<Grid ColumnDefinitions="1*,2*">
+		<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+			<StackPanel Spacing="10" Grid.Column="0">
+				<ItemsControl ItemsSource="{Binding Saves}">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<ui:SettingsExpander Header="{Binding FarmName}"
+												 Description="{Binding Date}"
+												 IsClickEnabled="True"
+												 Command="{Binding $parent[StackPanel].((vm:SavesViewModel)DataContext).LoadSaveHistoryCommand}"
+												 CommandParameter="{Binding}"
+												 ActionIconSource="{StaticResource GoIcon}">
+								<!--
+								<ui:SettingsExpander.Footer>
+										<Button Content="Load"
+											Command="{Binding $parent[StackPanel].((vm:SavesViewModel)DataContext).LoadSaveFromCommitCommand}"
+											CommandParameter="{Binding Name}"/>
+										<Button Content="Save"
+											Command="{Binding $parent[StackPanel].((vm:SavesViewModel)DataContext).CommitSaveCommand}"
+											CommandParameter="{Binding Name}"/>
+								</ui:SettingsExpander.Footer>
+								-->
+							</ui:SettingsExpander>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+
+				<Button Content="Save All"
+						Command="{Binding CommitAllSavesCommand}" />
+			</StackPanel>
+		</ScrollViewer>
+		<DataGrid Margin="20" ItemsSource="{Binding ActiveSave.SaveHistory}" Grid.Column="1">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Date Saved" Binding="{Binding CommitDate}"/>
+				<DataGridTemplateColumn>
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<Button Content="Load" Margin="10"/>
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+				<DataGridTemplateColumn>
+					<DataGridTemplateColumn.CellTemplate>
+						<DataTemplate>
+							<Button Content="View" Margin="10" />
+						</DataTemplate>
+					</DataGridTemplateColumn.CellTemplate>
+				</DataGridTemplateColumn>
+			</DataGrid.Columns>
+		</DataGrid>
+		<!--
+		<StackPanel Spacing="10" Grid.Column="1">
+			<ItemsControl ItemsSource="{Binding ActiveSave.SaveHistory}"
+                          Name="SaveHistoryItemsControl"
                           ClipToBounds="False">
-		        <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <ui:SettingsExpander Header="{Binding FarmName}"
-                                             Description="{Binding Date}"
-                                             IsClickEnabled="False"
-                                             ClipToBounds="False">
-						    <ui:SettingsExpander.Footer>
-									<Button Content="Load"
-									    Command="{Binding $parent[StackPanel].((vm:SavesViewModel)DataContext).LoadSaveFromCommitCommand}"
-						                CommandParameter="{Binding Name}"/>
-						    </ui:SettingsExpander.Footer>
-                            
-                        </ui:SettingsExpander>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-	        </ItemsControl>
-		
-	        <Button Content="Save All"
-				    Command="{Binding CommitAllSavesCommand}" />
-	    </StackPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate>
+						<ui:SettingsExpander Header="{Binding}"
+                                             IsClickEnabled="False">
+						</ui:SettingsExpander>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+		</StackPanel>
+		-->
 	</Grid>
     
 </UserControl>
