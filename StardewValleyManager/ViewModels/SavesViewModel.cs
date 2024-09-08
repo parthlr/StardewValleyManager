@@ -48,7 +48,15 @@ public partial class SavesViewModel : ObservableObject
             SaveInfoModel info = new SaveInfoModel();
             info.Name = folder;
             info.Date = "08/29/2024";
+            info.IsEnabled = true;
             info.LoadFarmName();
+
+            info.SaveService = new SaveFileService();
+            info.SaveService.LoadSaveFile($"{rootDir}/{folder}/{folder}");
+            info.SaveService.LoadSaveGameInfoFile($"{rootDir}/{folder}/SaveGameInfo");
+
+            info.PlayerName = info.SaveService.GetPlayerName();
+            info.FarmType = info.SaveService.GetFarmType();
 
             Saves.Add(info);
         }
@@ -60,16 +68,25 @@ public partial class SavesViewModel : ObservableObject
     {
         System.Diagnostics.Debug.WriteLine($"Loading save history for {Save.Name}");
 
-        IReadOnlyList<GitHubCommit> commitHistory = await git.GetCommitHistory("test-repo2", Save.Name);
-
-        Save.SaveHistory.Clear();
-
-        foreach (GitHubCommit commit in commitHistory)
+        if (Save.SaveHistory.Count == 0)
         {
-            SaveHistoryItemModel item = new SaveHistoryItemModel();
-            item.CommitDate = commit.Commit.Author.Date.ToString();
+            IReadOnlyList<GitHubCommit> commitHistory = await git.GetCommitHistory("test-repo2", Save.Name);
 
-            Save.SaveHistory.Add(item);
+            foreach (GitHubCommit commit in commitHistory)
+            {
+                SaveHistoryItemModel item = new SaveHistoryItemModel();
+                item.CommitDate = commit.Commit.Author.Date.ToString();
+
+                string saveGameInfo = await git.GetCommitContent("test-repo2", $"{Save.Name}/SaveGameInfo", commit.Sha);
+
+                item.SaveService = new SaveFileService();
+                item.SaveService.LoadSaveGameInfoXML(saveGameInfo);
+                item.Year = item.SaveService.GetYear();
+                item.Season = item.SaveService.GetSeason();
+                item.Day = item.SaveService.GetDay();
+
+                Save.SaveHistory.Add(item);
+            }
         }
 
         ActiveSave = Save;

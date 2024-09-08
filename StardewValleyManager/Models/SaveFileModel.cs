@@ -1,8 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using StardewValleyManager.Services;
 
 public partial class SaveInfoModel : ObservableObject
 {
+    [ObservableProperty]
+    private bool _isEnabled = false;
+
     [ObservableProperty]
     private string _date = "";
 
@@ -10,9 +14,17 @@ public partial class SaveInfoModel : ObservableObject
     private string _farmName = "";
 
     [ObservableProperty]
+    private string _playerName = "";
+
+    [ObservableProperty]
+    private string _farmType = "";
+
+    [ObservableProperty]
     private ObservableCollection<SaveHistoryItemModel> _saveHistory = [];
 
     public string? Name { get; set; }
+
+    public SaveFileService SaveService { get; set; }
 
     public void LoadFarmName()
     {
@@ -35,4 +47,15 @@ public partial class SaveHistoryItemModel : ObservableObject
 {
     [ObservableProperty]
     private string _commitDate = "";
+
+    [ObservableProperty]
+    private string _year = "";
+
+    [ObservableProperty]
+    private string _season = "";
+
+    [ObservableProperty]
+    private string _day = "";
+
+    public SaveFileService SaveService { get; set; }
 }

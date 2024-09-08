@@ -9,15 +9,16 @@ using Octokit;
 namespace StardewValleyManager.Services;
 public class GitService
 {
-    private string _authToken = "<token>";
-    private string _user = "parthlr";
-    private GitHubClient _client;
+
+    public string AuthToken { get; set; } = "<token>";
+    public string User { get; set; } = "parthlr";
+    public GitHubClient Client { get; set; }
 
     private static GitService instance = null;
 
     public GitService()
     {
-        _client = new GitHubClient(new ProductHeaderValue("StardewValleyManager"));
+        Client = new GitHubClient(new ProductHeaderValue("StardewValleyManager"));
     }
 
     public static GitService Instance
@@ -33,28 +34,13 @@ public class GitService
         }
     }
 
-    public string AuthToken
-    {
-        get => _authToken;
-    }
-
-    public string User
-    {
-        get => _user;
-    }
-
-    public GitHubClient Client
-    {
-        get => _client;
-    }
-
     public void Authenticate()
     {
         Credentials credentials = new Credentials(AuthToken);
         Client.Credentials = credentials;
     }
 
-    public async void CheckAndCreateRepository(string RepositoryName)
+    public async Task CheckAndCreateRepository(string RepositoryName)
     {
         IReadOnlyCollection<Repository> repos = await Client.Repository.GetAllForUser(User);
 
@@ -148,9 +134,9 @@ public class GitService
     private async Task<BlobReference> CreateFileBlob(string RepositoryName, string FileName)
     {
         string currentDate = DateTime.Now.ToString(new CultureInfo("en-US"));
-        string fileHeader = $"<!--{currentDate}-->";
+        string fileFooter = $"<!--{currentDate}-->";
 
-        string fileContent = fileHeader + "\n" + File.ReadAllText(FileName);
+        string fileContent = File.ReadAllText(FileName) + "\n" + fileFooter;
 
         NewBlob fileBlob = new NewBlob { Encoding = EncodingType.Utf8, Content = fileContent };
         BlobReference blobReference = await Client.Git.Blob.Create(User, RepositoryName, fileBlob);

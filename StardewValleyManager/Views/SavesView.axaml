@@ -50,25 +50,45 @@
 						Command="{Binding CommitAllSavesCommand}" />
 			</StackPanel>
 		</ScrollViewer>
-		<DataGrid Margin="20" ItemsSource="{Binding ActiveSave.SaveHistory}" Grid.Column="1">
-			<DataGrid.Columns>
-				<DataGridTextColumn Header="Date Saved" Binding="{Binding CommitDate}"/>
-				<DataGridTemplateColumn>
-					<DataGridTemplateColumn.CellTemplate>
-						<DataTemplate>
-							<Button Content="Load" Margin="10"/>
-						</DataTemplate>
-					</DataGridTemplateColumn.CellTemplate>
-				</DataGridTemplateColumn>
-				<DataGridTemplateColumn>
-					<DataGridTemplateColumn.CellTemplate>
-						<DataTemplate>
-							<Button Content="View" Margin="10" />
-						</DataTemplate>
-					</DataGridTemplateColumn.CellTemplate>
-				</DataGridTemplateColumn>
-			</DataGrid.Columns>
-		</DataGrid>
+		<StackPanel  Grid.Column="1" IsVisible="{Binding ActiveSave.IsEnabled}">
+			<TextBlock Text="{Binding ActiveSave.FarmName}"
+					   Margin="12"
+					   FontSize="40"
+					   FontWeight="SemiBold"/>
+			<TextBlock Text="{Binding ActiveSave.PlayerName}"
+					   Margin="12 0 0 0"
+					   FontSize="14"
+					   FontWeight="SemiBold"/>
+			<TextBlock Text="{Binding ActiveSave.FarmType}"
+					   Margin="12 0 0 0"
+					   FontSize="14"
+					   FontWeight="SemiBold"/>
+			<DataGrid Margin="20"
+					  ItemsSource="{Binding ActiveSave.SaveHistory}"
+					  ColumnWidth="*"
+					  IsReadOnly="True">
+				<DataGrid.Columns>
+					<DataGridTextColumn Width="Auto" Header="Date Saved" Binding="{Binding CommitDate}"/>
+					<DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
+					<DataGridTextColumn Header="Season" Binding="{Binding Season}"/>
+					<DataGridTextColumn Header="Day" Binding="{Binding Day}"/>
+					<DataGridTemplateColumn Width="Auto">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<Button Content="Load" Margin="10"/>
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+					<DataGridTemplateColumn Width="Auto">
+						<DataGridTemplateColumn.CellTemplate>
+							<DataTemplate>
+								<Button Content="View" Margin="10" />
+							</DataTemplate>
+						</DataGridTemplateColumn.CellTemplate>
+					</DataGridTemplateColumn>
+				</DataGrid.Columns>
+			</DataGrid>
+		</StackPanel>
 		<!--
 		<StackPanel Spacing="10" Grid.Column="1">
 			<ItemsControl ItemsSource="{Binding ActiveSave.SaveHistory}"
