@@ -20,54 +20,86 @@
 	</UserControl.Resources>
 	
 	<Grid ColumnDefinitions="1*,2*">
-		<ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-			<StackPanel Spacing="10" Grid.Column="0">
-				<ItemsControl ItemsSource="{Binding Saves}">
-					<ItemsControl.ItemTemplate>
-						<DataTemplate>
-							<ui:SettingsExpander Header="{Binding FarmName}"
-												 Description="{Binding Date}"
-												 IsClickEnabled="True"
-												 Command="{Binding $parent[StackPanel].((vm:SavesViewModel)DataContext).LoadSaveHistoryCommand}"
-												 CommandParameter="{Binding}"
-												 ActionIconSource="{StaticResource GoIcon}">
-								<!--
-								<ui:SettingsExpander.Footer>
-										<Button Content="Load"
-											Command="{Binding $parent[StackPanel].((vm:SavesViewModel)DataContext).LoadSaveFromCommitCommand}"
-											CommandParameter="{Binding Name}"/>
-										<Button Content="Save"
-											Command="{Binding $parent[StackPanel].((vm:SavesViewModel)DataContext).CommitSaveCommand}"
-											CommandParameter="{Binding Name}"/>
-								</ui:SettingsExpander.Footer>
-								-->
-							</ui:SettingsExpander>
-						</DataTemplate>
-					</ItemsControl.ItemTemplate>
-				</ItemsControl>
-
-				<Button Content="Save All"
-						Command="{Binding CommitAllSavesCommand}" />
-			</StackPanel>
-		</ScrollViewer>
-		<StackPanel  Grid.Column="1" IsVisible="{Binding ActiveSave.IsEnabled}">
-			<TextBlock Text="{Binding ActiveSave.FarmName}"
-					   Margin="12"
-					   FontSize="40"
-					   FontWeight="SemiBold"/>
+			<Border
+				Grid.Column="0"
+				Margin="4"
+				Padding="12"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Stretch"
+				Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}"
+				BorderBrush="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
+				BorderThickness="1"
+				CornerRadius="5">
+				<StackPanel Spacing="10" >
+					<TextBox Name="SavesSearchBox"
+							 Watermark="Search"
+							 HorizontalAlignment="Stretch"
+							 VerticalAlignment="Stretch"
+							 InnerRightContent=""/>
+					<Grid ColumnDefinitions="1*,1*">
+						<Button Grid.Column="0"
+								HorizontalAlignment="Left">
+							<ui:FontIcon Glyph="&#xE149;"
+										 FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+						</Button>
+						<Button Content="Save Selected"
+								Grid.Column="1"
+								Command="{Binding CommitSelectedSavesCommand}"
+								Width="175"
+								HorizontalAlignment="Right"/>
+					</Grid>
+					<ItemsControl ItemsSource="{Binding Saves}">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate>
+								<Grid ColumnDefinitions="Auto,*">
+									<CheckBox Margin="4"
+												Grid.Column="0"
+												IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
+									<ui:SettingsExpander Header="{Binding FarmName}"
+															Description="{Binding Date}"
+															IsClickEnabled="True"
+															Command="{Binding $parent[StackPanel].((vm:SavesViewModel)DataContext).LoadSaveHistoryCommand}"
+															CommandParameter="{Binding}"
+															ActionIconSource="{StaticResource GoIcon}"
+															Grid.Column="1">
+									</ui:SettingsExpander>
+								</Grid>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</StackPanel>
+			</Border>
+		<StackPanel Grid.Column="1" IsVisible="{Binding ActiveSave.IsEnabled}">
+			<Grid ColumnDefinitions="3*,Auto">
+				<TextBlock Text="{Binding ActiveSave.FarmName}"
+						   Margin="12"
+						   FontSize="40"
+						   FontWeight="SemiBold"
+						   Grid.Column="0"/>
+				<Button Content="Create Save"
+						Grid.Column="1"
+						Width="175"
+						Margin="0 0 12 0"
+						Command="{Binding $parent[StackPanel].((vm:SavesViewModel)DataContext).CommitSaveCommand}"
+						CommandParameter="{Binding ActiveSave.Name}"/>
+			</Grid>
 			<TextBlock Text="{Binding ActiveSave.PlayerName}"
-					   Margin="12 0 0 0"
-					   FontSize="14"
-					   FontWeight="SemiBold"/>
+						Margin="12 0 0 0"
+						FontSize="14"
+						FontWeight="SemiBold"/>
 			<TextBlock Text="{Binding ActiveSave.FarmType}"
 					   Margin="12 0 0 0"
 					   FontSize="14"
 					   FontWeight="SemiBold"/>
+			<Border Background="{DynamicResource DividerStrokeColorDefaultBrush}"
+                        Height="1"
+                        Margin="6" />
 			<DataGrid Margin="20"
 					  ItemsSource="{Binding ActiveSave.SaveHistory}"
 					  ColumnWidth="*"
 					  IsReadOnly="True">
 				<DataGrid.Columns>
+					<DataGridTextColumn Width="Auto" Header="Commit SHA" Binding="{Binding CommitSha}"/>
 					<DataGridTextColumn Width="Auto" Header="Date Saved" Binding="{Binding CommitDate}"/>
 					<DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
 					<DataGridTextColumn Header="Season" Binding="{Binding Season}"/>

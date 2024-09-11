@@ -8,6 +8,9 @@ public partial class SaveInfoModel : ObservableObject
     private bool _isEnabled = false;
 
     [ObservableProperty]
+    private bool _isSelected = false;
+
+    [ObservableProperty]
     private string _date = "";
 
     [ObservableProperty]
@@ -45,6 +48,9 @@ public partial class SaveInfoModel : ObservableObject
 
 public partial class SaveHistoryItemModel : ObservableObject
 {
+    [ObservableProperty]
+    private string _commitSha = "";
+
     [ObservableProperty]
     private string _commitDate = "";
 

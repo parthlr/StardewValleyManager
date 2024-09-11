@@ -71,11 +71,11 @@ public class GitService
         }
     }
 
-    public async Task CommitAllSaves(SaveInfoModel[] Saves)
+    public async Task CommitAllSaves(string[] Saves)
     {
-        foreach (SaveInfoModel save in Saves)
+        foreach (string save in Saves)
         {
-            await CommitSaveFolder(save.Name);
+            await CommitSaveFolder(save);
         }
     }
 

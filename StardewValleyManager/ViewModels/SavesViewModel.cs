@@ -17,7 +17,7 @@ public partial class SavesViewModel : ObservableObject
     private ObservableCollection<SaveInfoModel> _saves = [];
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(CommitAllSavesCommand))]
+    [NotifyCanExecuteChangedFor(nameof(CommitSelectedSavesCommand))]
     [NotifyCanExecuteChangedFor(nameof(CommitSaveCommand))]
     [NotifyCanExecuteChangedFor(nameof(LoadSaveFromCommitCommand))]
     private bool _saving = false;
@@ -75,6 +75,7 @@ public partial class SavesViewModel : ObservableObject
             foreach (GitHubCommit commit in commitHistory)
             {
                 SaveHistoryItemModel item = new SaveHistoryItemModel();
+                item.CommitSha = commit.Sha;
                 item.CommitDate = commit.Commit.Author.Date.ToString();
 
                 string saveGameInfo = await git.GetCommitContent("test-repo2", $"{Save.Name}/SaveGameInfo", commit.Sha);
@@ -92,12 +93,23 @@ public partial class SavesViewModel : ObservableObject
         ActiveSave = Save;
     }
 
-    [RelayCommand(CanExecute = nameof(CanCommitSave))]
+    /*[RelayCommand(CanExecute = nameof(CanCommitSave))]
     private async Task CommitAllSaves()
     {
         Saving = true;
 
         await git.CommitAllSaves(Saves.ToArray());
+
+        Saving = false;
+    }*/
+
+    [RelayCommand(CanExecute = nameof(CanCommitSave))]
+    private async Task CommitSelectedSaves()
+    {
+        Saving = true;
+
+        IEnumerable<string> selectedSaves = Saves.Where(save => save.IsSelected).Select(save => save.Name);
+        await git.CommitAllSaves(selectedSaves.ToArray());
 
         Saving = false;
     }
