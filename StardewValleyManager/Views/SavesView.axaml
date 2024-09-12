@@ -20,35 +20,39 @@
 	</UserControl.Resources>
 	
 	<Grid ColumnDefinitions="1*,2*">
-			<Border
-				Grid.Column="0"
-				Margin="4"
-				Padding="12"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch"
-				Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}"
-				BorderBrush="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
-				BorderThickness="1"
-				CornerRadius="5">
-				<StackPanel Spacing="10" >
-					<TextBox Name="SavesSearchBox"
-							 Watermark="Search"
-							 HorizontalAlignment="Stretch"
-							 VerticalAlignment="Stretch"
-							 InnerRightContent=""/>
-					<Grid ColumnDefinitions="1*,1*">
-						<Button Grid.Column="0"
-								HorizontalAlignment="Left"
-								Command="{Binding LoadSaveLocationsCommand}">
-							<ui:FontIcon Glyph="&#xE149;"
-										 FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-						</Button>
-						<Button Content="Save Selected"
-								Grid.Column="1"
-								Command="{Binding CommitSelectedSavesCommand}"
-								Width="175"
-								HorizontalAlignment="Right"/>
-					</Grid>
+		<Border
+			Grid.Column="0"
+			Margin="4"
+			Padding="12"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch"
+			Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}"
+			BorderBrush="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
+			BorderThickness="1"
+			CornerRadius="5">
+			<Grid RowDefinitions="Auto,10,Auto,10,*">
+				<TextBox Name="SavesSearchBox"
+							Watermark="Search"
+							HorizontalAlignment="Stretch"
+							VerticalAlignment="Stretch"
+							Grid.Row="0"/>
+				
+				<Grid ColumnDefinitions="1*,1*"
+					  Grid.Row="2">
+					<Button Grid.Column="0"
+							HorizontalAlignment="Left"
+							Command="{Binding LoadSaveLocationsCommand}">
+						<ui:FontIcon Glyph="&#xE149;"
+										FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+					</Button>
+					<Button Content="Save Selected"
+							Grid.Column="1"
+							Command="{Binding CommitSelectedSavesCommand}"
+							Width="175"
+							HorizontalAlignment="Right"/>
+				</Grid>
+				
+				<ScrollViewer Grid.Row="4">
 					<ItemsControl ItemsSource="{Binding Saves}">
 						<ItemsControl.ItemTemplate>
 							<DataTemplate>
@@ -59,7 +63,7 @@
 									<ui:SettingsExpander Header="{Binding FarmName}"
 															Description="{Binding Date}"
 															IsClickEnabled="True"
-															Command="{Binding $parent[StackPanel].((vm:SavesViewModel)DataContext).LoadSaveHistoryCommand}"
+															Command="{Binding $parent[Border].((vm:SavesViewModel)DataContext).LoadSaveHistoryCommand}"
 															CommandParameter="{Binding}"
 															ActionIconSource="{StaticResource GoIcon}"
 															Grid.Column="1">
@@ -68,8 +72,11 @@
 							</DataTemplate>
 						</ItemsControl.ItemTemplate>
 					</ItemsControl>
-				</StackPanel>
-			</Border>
+				</ScrollViewer>
+			
+			</Grid>
+		</Border>
+		
 		<StackPanel Grid.Column="1" IsVisible="{Binding ActiveSave.IsEnabled}">
 			<Grid ColumnDefinitions="3*,Auto">
 				<TextBlock Text="{Binding ActiveSave.FarmName}"
@@ -123,5 +130,4 @@
 			</DataGrid>
 		</StackPanel>
 	</Grid>
-    
 </UserControl>
