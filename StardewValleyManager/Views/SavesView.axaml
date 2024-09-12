@@ -38,7 +38,8 @@
 							 InnerRightContent=""/>
 					<Grid ColumnDefinitions="1*,1*">
 						<Button Grid.Column="0"
-								HorizontalAlignment="Left">
+								HorizontalAlignment="Left"
+								Command="{Binding LoadSaveLocationsCommand}">
 							<ui:FontIcon Glyph="&#xE149;"
 										 FontFamily="{StaticResource SymbolThemeFontFamily}"/>
 						</Button>
@@ -121,21 +122,6 @@
 				</DataGrid.Columns>
 			</DataGrid>
 		</StackPanel>
-		<!--
-		<StackPanel Spacing="10" Grid.Column="1">
-			<ItemsControl ItemsSource="{Binding ActiveSave.SaveHistory}"
-                          Name="SaveHistoryItemsControl"
-                          ClipToBounds="False">
-				<ItemsControl.ItemTemplate>
-					<DataTemplate>
-						<ui:SettingsExpander Header="{Binding}"
-                                             IsClickEnabled="False">
-						</ui:SettingsExpander>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
-		</StackPanel>
-		-->
 	</Grid>
     
 </UserControl>

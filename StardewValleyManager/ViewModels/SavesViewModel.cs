@@ -29,15 +29,20 @@ public partial class SavesViewModel : ObservableObject
 
     public SavesViewModel()
     {
-        LoadSaveLocations(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/StardewValley/Saves");
+        LoadSaveLocations();
 
         git = GitService.Instance;
         git.Authenticate();
         //git.CheckAndCreateRepository("test-repo2");
     }
 
-    private void LoadSaveLocations(string rootDir)
+    [RelayCommand]
+    private void LoadSaveLocations()
     {
+        Saves.Clear();
+
+        string rootDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/StardewValley/Saves";
+
         string?[] saveFolders = Directory.GetDirectories(rootDir)
                             .Select(Path.GetFileName)
                             .ToArray();
