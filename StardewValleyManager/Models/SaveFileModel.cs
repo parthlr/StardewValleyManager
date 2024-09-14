@@ -8,6 +8,9 @@ public partial class SaveInfoModel : ObservableObject
     private bool _isEnabled = false;
 
     [ObservableProperty]
+    private bool _isVisible = false;
+
+    [ObservableProperty]
     private bool _isSelected = false;
 
     [ObservableProperty]

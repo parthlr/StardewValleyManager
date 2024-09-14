@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Octokit;
@@ -15,6 +16,9 @@ public partial class SavesViewModel : ObservableObject
 
     [ObservableProperty]
     private ObservableCollection<SaveInfoModel> _saves = [];
+
+    [ObservableProperty]
+    private string _searchQuery = "";
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CommitSelectedSavesCommand))]
@@ -54,6 +58,7 @@ public partial class SavesViewModel : ObservableObject
             info.Name = folder;
             info.Date = "08/29/2024";
             info.IsEnabled = true;
+            info.IsVisible = true;
             info.LoadFarmName();
 
             info.SaveService = new SaveFileService();
@@ -68,31 +73,53 @@ public partial class SavesViewModel : ObservableObject
 
     }
 
+    partial void OnSearchQueryChanged(string value)
+    {
+        string query = value.Trim();
+
+        if (query.Equals(""))
+        {
+            foreach (SaveInfoModel save in Saves)
+            {
+                save.IsVisible = true;
+            }
+        } else
+        {
+            foreach (SaveInfoModel save in Saves)
+            {
+                if (save.Name.ToLower().Contains(SearchQuery))
+                {
+                    save.IsVisible = true;
+                } else
+                {
+                    save.IsVisible = false;
+                }
+            }
+        }
+    }
+
     [RelayCommand]
     private async Task LoadSaveHistory(SaveInfoModel Save)
     {
         System.Diagnostics.Debug.WriteLine($"Loading save history for {Save.Name}");
 
-        if (Save.SaveHistory.Count == 0)
+        IReadOnlyList<GitHubCommit> commitHistory = await git.GetCommitHistory("test-repo2", Save.Name);
+
+        foreach (GitHubCommit commit in commitHistory)
         {
-            IReadOnlyList<GitHubCommit> commitHistory = await git.GetCommitHistory("test-repo2", Save.Name);
+            SaveHistoryItemModel item = new SaveHistoryItemModel();
+            item.CommitSha = commit.Sha;
+            item.CommitDate = commit.Commit.Author.Date.ToString();
 
-            foreach (GitHubCommit commit in commitHistory)
-            {
-                SaveHistoryItemModel item = new SaveHistoryItemModel();
-                item.CommitSha = commit.Sha;
-                item.CommitDate = commit.Commit.Author.Date.ToString();
+            string saveGameInfo = await git.GetCommitContent("test-repo2", $"{Save.Name}/SaveGameInfo", commit.Sha);
 
-                string saveGameInfo = await git.GetCommitContent("test-repo2", $"{Save.Name}/SaveGameInfo", commit.Sha);
+            item.SaveService = new SaveFileService();
+            item.SaveService.LoadSaveGameInfoXML(saveGameInfo);
+            item.Year = item.SaveService.GetYear();
+            item.Season = item.SaveService.GetSeason();
+            item.Day = item.SaveService.GetDay();
 
-                item.SaveService = new SaveFileService();
-                item.SaveService.LoadSaveGameInfoXML(saveGameInfo);
-                item.Year = item.SaveService.GetYear();
-                item.Season = item.SaveService.GetSeason();
-                item.Day = item.SaveService.GetDay();
-
-                Save.SaveHistory.Add(item);
-            }
+            Save.SaveHistory.Add(item);
         }
 
         ActiveSave = Save;
