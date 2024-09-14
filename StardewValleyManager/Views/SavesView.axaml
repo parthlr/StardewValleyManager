@@ -78,8 +78,10 @@
 			</Grid>
 		</Border>
 		
-		<StackPanel Grid.Column="1" IsVisible="{Binding ActiveSave.IsEnabled}">
-			<Grid ColumnDefinitions="3*,Auto">
+		<Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+			  Grid.Column="1"
+			  IsVisible="{Binding ActiveSave.IsEnabled}">
+			<Grid Grid.Row="0" ColumnDefinitions="3*,Auto">
 				<TextBlock Text="{Binding ActiveSave.FarmName}"
 						   Margin="12"
 						   FontSize="40"
@@ -92,18 +94,22 @@
 						Command="{Binding $parent[StackPanel].((vm:SavesViewModel)DataContext).CommitSaveCommand}"
 						CommandParameter="{Binding ActiveSave.Name}"/>
 			</Grid>
-			<TextBlock Text="{Binding ActiveSave.PlayerName}"
-						Margin="12 0 0 0"
-						FontSize="14"
-						FontWeight="SemiBold"/>
-			<TextBlock Text="{Binding ActiveSave.FarmType}"
+			<TextBlock Grid.Row="1"
+					   Text="{Binding ActiveSave.PlayerName}"
 					   Margin="12 0 0 0"
 					   FontSize="14"
 					   FontWeight="SemiBold"/>
-			<Border Background="{DynamicResource DividerStrokeColorDefaultBrush}"
-                        Height="1"
-                        Margin="6" />
-			<DataGrid Margin="20"
+			<TextBlock Grid.Row="2"
+					   Text="{Binding ActiveSave.FarmType}"
+					   Margin="12 0 0 0"
+					   FontSize="14"
+					   FontWeight="SemiBold"/>
+			<Border Grid.Row="3"
+					Background="{DynamicResource DividerStrokeColorDefaultBrush}"
+					Height="1"
+					Margin="6" />
+			<DataGrid Grid.Row="4"
+					  Margin="20"
 					  ItemsSource="{Binding ActiveSave.SaveHistory}"
 					  ColumnWidth="*"
 					  IsReadOnly="True">
@@ -129,6 +135,6 @@
 					</DataGridTemplateColumn>
 				</DataGrid.Columns>
 			</DataGrid>
-		</StackPanel>
+		</Grid>
 	</Grid>
 </UserControl>

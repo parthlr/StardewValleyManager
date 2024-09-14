@@ -105,6 +105,8 @@ public partial class SavesViewModel : ObservableObject
 
         IReadOnlyList<GitHubCommit> commitHistory = await git.GetCommitHistory("test-repo2", Save.Name);
 
+        Save.SaveHistory.Clear();
+
         foreach (GitHubCommit commit in commitHistory)
         {
             SaveHistoryItemModel item = new SaveHistoryItemModel();
