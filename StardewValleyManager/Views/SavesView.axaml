@@ -91,7 +91,7 @@
 						Grid.Column="1"
 						Width="175"
 						Margin="0 0 12 0"
-						Command="{Binding $parent[StackPanel].((vm:SavesViewModel)DataContext).CommitSaveCommand}"
+						Command="{Binding CommitSaveCommand}"
 						CommandParameter="{Binding ActiveSave.Name}"/>
 			</Grid>
 			<TextBlock Grid.Row="1"

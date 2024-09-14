@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,6 +32,10 @@ public partial class SavesViewModel : ObservableObject
 
     private GitService git;
 
+    private string repoName = ConfigurationManager.AppSettings.Get("RepositoryName");
+
+    private string saveLocation = ConfigurationManager.AppSettings.Get("SavesLocation");
+
     public SavesViewModel()
     {
         LoadSaveLocations();
@@ -45,9 +50,7 @@ public partial class SavesViewModel : ObservableObject
     {
         Saves.Clear();
 
-        string rootDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/StardewValley/Saves";
-
-        string?[] saveFolders = Directory.GetDirectories(rootDir)
+        string?[] saveFolders = Directory.GetDirectories(saveLocation)
                             .Select(Path.GetFileName)
                             .ToArray();
 
@@ -62,8 +65,8 @@ public partial class SavesViewModel : ObservableObject
             info.LoadFarmName();
 
             info.SaveService = new SaveFileService();
-            info.SaveService.LoadSaveFile($"{rootDir}/{folder}/{folder}");
-            info.SaveService.LoadSaveGameInfoFile($"{rootDir}/{folder}/SaveGameInfo");
+            info.SaveService.LoadSaveFile($"{saveLocation}/{folder}/{folder}");
+            info.SaveService.LoadSaveGameInfoFile($"{saveLocation}/{folder}/SaveGameInfo");
 
             info.PlayerName = info.SaveService.GetPlayerName();
             info.FarmType = info.SaveService.GetFarmType();
@@ -103,7 +106,7 @@ public partial class SavesViewModel : ObservableObject
     {
         System.Diagnostics.Debug.WriteLine($"Loading save history for {Save.Name}");
 
-        IReadOnlyList<GitHubCommit> commitHistory = await git.GetCommitHistory("test-repo2", Save.Name);
+        IReadOnlyList<GitHubCommit> commitHistory = await git.GetCommitHistory(repoName, Save.Name);
 
         Save.SaveHistory.Clear();
 
@@ -113,7 +116,7 @@ public partial class SavesViewModel : ObservableObject
             item.CommitSha = commit.Sha;
             item.CommitDate = commit.Commit.Author.Date.ToString();
 
-            string saveGameInfo = await git.GetCommitContent("test-repo2", $"{Save.Name}/SaveGameInfo", commit.Sha);
+            string saveGameInfo = await git.GetCommitContent(repoName, $"{Save.Name}/SaveGameInfo", commit.Sha);
 
             item.SaveService = new SaveFileService();
             item.SaveService.LoadSaveGameInfoXML(saveGameInfo);
@@ -167,9 +170,9 @@ public partial class SavesViewModel : ObservableObject
 
         System.Diagnostics.Debug.WriteLine($"Getting content from commit for save file {SaveName}");
 
-        Commit latestCommit = await git.GetLatestCommit("test-repo2");
+        Commit latestCommit = await git.GetLatestCommit(repoName);
 
-        string commitContent = await git.GetCommitContent("test-repo2", $"{SaveName}/{SaveName}", latestCommit.Sha);
+        string commitContent = await git.GetCommitContent(repoName, $"{SaveName}/{SaveName}", latestCommit.Sha);
 
         Directory.CreateDirectory($"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/StardewValley/Save_Backups");
 

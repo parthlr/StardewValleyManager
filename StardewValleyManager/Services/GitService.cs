@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -10,8 +11,8 @@ namespace StardewValleyManager.Services;
 public class GitService
 {
 
-    public string AuthToken { get; set; } = "<token>";
-    public string User { get; set; } = "parthlr";
+    public string AuthToken { get; set; } = ConfigurationManager.AppSettings.Get("GitToken");
+    public string User { get; set; } = ConfigurationManager.AppSettings.Get("UserName");
     public GitHubClient Client { get; set; }
 
     private static GitService instance = null;
