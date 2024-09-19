@@ -3,22 +3,20 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:StardewValleyManager.ViewModels"
-			 xmlns:i="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
-			 xmlns:ia="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:ui="using:FluentAvalonia.UI.Controls"
              x:Class="StardewValleyManager.Views.SavesView"
 	         x:DataType="vm:SavesViewModel">
-	
+
 	<Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
+		<!-- This only sets the DataContext for the previewer in an IDE,
         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:SavesViewModel />
-    </Design.DataContext>
+		<vm:SavesViewModel />
+	</Design.DataContext>
 	<UserControl.Resources>
 		<ui:SymbolIconSource x:Key="GoIcon" Symbol="ChevronRight" />
 	</UserControl.Resources>
-	
+
 	<Grid ColumnDefinitions="1*,2*">
 		<Border
 			Grid.Column="0"
@@ -37,7 +35,7 @@
 						 HorizontalAlignment="Stretch"
 						 VerticalAlignment="Stretch"
 						 Grid.Row="0"/>
-				
+
 				<Grid ColumnDefinitions="1*,1*"
 					  Grid.Row="2">
 					<Button Grid.Column="0"
@@ -52,7 +50,7 @@
 							Width="175"
 							HorizontalAlignment="Right"/>
 				</Grid>
-				
+
 				<ScrollViewer Grid.Row="4">
 					<ItemsControl ItemsSource="{Binding Saves}">
 						<ItemsControl.ItemTemplate>
@@ -74,10 +72,10 @@
 						</ItemsControl.ItemTemplate>
 					</ItemsControl>
 				</ScrollViewer>
-			
+
 			</Grid>
 		</Border>
-		
+
 		<Grid RowDefinitions="Auto,Auto,Auto,Auto,*"
 			  Grid.Column="1"
 			  IsVisible="{Binding ActiveSave.IsEnabled}">

@@ -9,5 +9,9 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="StardewValleyManager">
 
+	<views:MainView x:Name="MainView"/>
+	
+	<!--
 	<views:SavesView x:Name="SaveFiles"/>
+	-->
 </Window>

@@ -8,6 +8,6 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        SaveFiles.DataContext = new SavesViewModel();
+        MainView.DataContext = new MainViewModel();
     }
 }

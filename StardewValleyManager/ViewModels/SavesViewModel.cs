@@ -12,7 +12,7 @@ using Octokit;
 using StardewValleyManager.Services;
 
 namespace StardewValleyManager.ViewModels;
-public partial class SavesViewModel : ObservableObject
+public partial class SavesViewModel : ViewModelBase
 {
 
     [ObservableProperty]

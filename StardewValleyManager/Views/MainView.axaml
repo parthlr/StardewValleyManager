@@ -3,14 +3,34 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:StardewValleyManager.ViewModels"
+			 xmlns:m="clr-namespace:StardewValleyManager.Models"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:ui="using:FluentAvalonia.UI.Controls"
              x:Class="StardewValleyManager.Views.MainView"
              x:DataType="vm:MainViewModel">
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainViewModel />
-    </Design.DataContext>
+		<vm:MainViewModel />
+	</Design.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+	<ui:NavigationView Content="{Binding CurrentPage}"
+					   MenuItemsSource="{Binding MenuViewModels}"
+					   FooterMenuItemsSource="{Binding FooterViewModels}"
+					   SelectedItem="{Binding SelectedView, Mode=TwoWay}"
+					   PaneDisplayMode="LeftCompact"
+					   IsPaneToggleButtonVisible="False"
+					   IsSettingsVisible="False">
+		<ui:NavigationView.MenuItemTemplate>
+			<DataTemplate DataType="{x:Type m:NavigationItemModel}">
+				<ui:NavigationViewItem Content="{Binding Title}"
+									   IconSource="{Binding Icon}"
+									   Cursor="Hand"/>
+			</DataTemplate>
+		</ui:NavigationView.MenuItemTemplate>
+	</ui:NavigationView>
+	
+	<!--
+	<TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    -->
 </UserControl>
