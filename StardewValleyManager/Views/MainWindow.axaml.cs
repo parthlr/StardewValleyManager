@@ -5,9 +5,10 @@ namespace StardewValleyManager.Views;
 
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    public MainWindow(object dataContext)
     {
         InitializeComponent();
-        MainView.DataContext = new MainViewModel();
+        DataContext = dataContext;
+        //MainView.DataContext = new MainViewModel();
     }
 }

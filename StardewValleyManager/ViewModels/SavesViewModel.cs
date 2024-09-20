@@ -36,11 +36,12 @@ public partial class SavesViewModel : ViewModelBase
 
     private string saveLocation = ConfigurationManager.AppSettings.Get("SavesLocation");
 
-    public SavesViewModel()
+    public SavesViewModel(GitService gitService)
     {
+        git = gitService;
+
         LoadSaveLocations();
 
-        git = GitService.Instance;
         git.Authenticate();
         //git.CheckAndCreateRepository("test-repo2");
     }

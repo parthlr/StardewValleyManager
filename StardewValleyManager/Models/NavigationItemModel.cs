@@ -20,8 +20,6 @@ public partial class NavigationItemModel : ObservableObject
     [ObservableProperty]
     private ViewModelBase _viewModel;
 
-    public bool Initialized { get; set; } = false;
-
     public NavigationItemModel(string title, string icon, ViewModelBase viewModel)
     {
         Title = title;
