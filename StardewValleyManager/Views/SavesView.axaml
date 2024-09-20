@@ -62,7 +62,7 @@
 									<ui:SettingsExpander Header="{Binding FarmName}"
 															Description="{Binding Date}"
 															IsClickEnabled="True"
-															Command="{Binding $parent[Border].((vm:SavesViewModel)DataContext).LoadSaveHistoryCommand}"
+															Command="{Binding $parent[ItemsControl].((vm:SavesViewModel)DataContext).LoadSaveHistoryCommand}"
 															CommandParameter="{Binding}"
 															ActionIconSource="{StaticResource GoIcon}"
 															Grid.Column="1">
