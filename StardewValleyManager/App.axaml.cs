@@ -47,6 +47,7 @@ public partial class App : Application
 
         services.AddSingleton<GitService>();
         services.AddSingleton<SaveFileService>();
+        services.AddSingleton<SettingsService>();
 
         services.AddSingleton<IViewModelFactory<SavesViewModel>, SavesViewModelFactory>();
         services.AddSingleton<IViewModelFactory<SettingsViewModel>, SettingsViewModelFactory>();

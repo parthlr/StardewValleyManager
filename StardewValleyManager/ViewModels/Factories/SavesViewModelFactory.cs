@@ -11,13 +11,16 @@ public class SavesViewModelFactory : IViewModelFactory<SavesViewModel>
 {
     private readonly GitService _gitService;
 
-    public SavesViewModelFactory(GitService gitService)
+    private readonly SettingsService _settingsService;
+
+    public SavesViewModelFactory(GitService gitService, SettingsService settingsService)
     {
         _gitService = gitService;
+        _settingsService = settingsService;
     }
 
     public SavesViewModel CreateViewModel()
     {
-        return new SavesViewModel(_gitService);
+        return new SavesViewModel(_gitService, _settingsService);
     }
 }

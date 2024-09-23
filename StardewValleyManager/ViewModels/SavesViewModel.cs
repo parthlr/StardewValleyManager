@@ -32,13 +32,19 @@ public partial class SavesViewModel : ViewModelBase
 
     private GitService git;
 
-    private string repoName = ConfigurationManager.AppSettings.Get("RepositoryName");
+    private SettingsService settingsService;
 
-    private string saveLocation = ConfigurationManager.AppSettings.Get("SavesLocation");
+    private string repoName;
 
-    public SavesViewModel(GitService gitService)
+    private string saveLocation;
+
+    public SavesViewModel(GitService gitService, SettingsService settingsService)
     {
         git = gitService;
+        this.settingsService = settingsService;
+
+        repoName = settingsService.GetSettingsValue("repository");
+        saveLocation = settingsService.GetSettingsValue("savesLocation");
 
         LoadSaveLocations();
 
