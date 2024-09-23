@@ -11,27 +11,22 @@ namespace StardewValleyManager.Services;
 public class GitService
 {
 
-    public string AuthToken { get; set; } = ConfigurationManager.AppSettings.Get("GitToken");
-    public string User { get; set; } = ConfigurationManager.AppSettings.Get("UserName");
+    public string AuthToken { get; set; }
+    public string User { get; set; }
+    public string RepositoryName { get; set; }
     public GitHubClient Client { get; set; }
 
-    private static GitService instance = null;
-
-    public GitService()
+    public GitService(SettingsService settingsService)
     {
+        AuthToken = settingsService.GetSettingsValue("gitToken");
+        User = settingsService.GetSettingsValue("username");
+        RepositoryName = settingsService.GetSettingsValue("repository");
+
         Client = new GitHubClient(new ProductHeaderValue("StardewValleyManager"));
-    }
 
-    public static GitService Instance
-    {
-        get
+        if (AuthToken != null && AuthToken.Length > 0)
         {
-            if (instance == null)
-            {
-                return new GitService();
-            }
-
-            return instance;
+            Authenticate();
         }
     }
 
@@ -83,23 +78,22 @@ public class GitService
     public async Task<Reference> CommitSaveFolder(string SaveName)
     {
         System.Diagnostics.Debug.WriteLine($"Commiting save {SaveName}");
-        string repo = "test-repo2";
 
-        Commit latestCommit = await GetLatestCommit(repo);
+        Commit latestCommit = await GetLatestCommit();
 
         string filesLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "/StardewValley/Saves/" + SaveName;
         string[] saveFiles = Directory.GetFiles(filesLocation);
-        TreeResponse commitTree = await CreateCommitTree(repo, saveFiles, SaveName);
+        TreeResponse commitTree = await CreateCommitTree(saveFiles, SaveName);
 
         DateTime currentDate = DateTime.Now;
         string locality = "en-US";
-        Reference newCommit = await CreateNewCommit(repo, $"Saved {SaveName} on {currentDate.ToString(new CultureInfo(locality))}", latestCommit, commitTree);
+        Reference newCommit = await CreateNewCommit($"Saved {SaveName} on {currentDate.ToString(new CultureInfo(locality))}", latestCommit, commitTree);
         System.Diagnostics.Debug.WriteLine($"Finished saving {SaveName}");
 
         return newCommit;
     }
 
-    public async Task<IReadOnlyList<GitHubCommit>> GetCommitHistory(string RepositoryName, string SaveName)
+    public async Task<IReadOnlyList<GitHubCommit>> GetCommitHistory(string SaveName)
     {
         CommitRequest commitRequest = new CommitRequest { Path = $"{SaveName}/{SaveName}" };
         IReadOnlyList<GitHubCommit> commits = await Client.Repository.Commit.GetAll(User, RepositoryName, commitRequest);
@@ -107,7 +101,7 @@ public class GitService
         return commits;
     }
 
-    public async Task<string> GetCommitContent(string RepositoryName, string FileName, string CommitSha)
+    public async Task<string> GetCommitContent(string FileName, string CommitSha)
     {
         IReadOnlyList<RepositoryContent> content = await Client.Repository.Content.GetAllContentsByRef(User, RepositoryName, FileName, CommitSha);
 
@@ -122,7 +116,7 @@ public class GitService
         return decodedText;
     }
 
-    public async Task<Commit> GetLatestCommit(string RepositoryName)
+    public async Task<Commit> GetLatestCommit()
     {
         string branchHead = "heads/master";
 
@@ -132,7 +126,7 @@ public class GitService
         return latestCommit;
     }
 
-    private async Task<BlobReference> CreateFileBlob(string RepositoryName, string FileName)
+    private async Task<BlobReference> CreateFileBlob(string FileName)
     {
         string currentDate = DateTime.Now.ToString(new CultureInfo("en-US"));
         string fileFooter = $"<!--{currentDate}-->";
@@ -145,9 +139,9 @@ public class GitService
         return blobReference;
     }
 
-    private async Task<TreeResponse> CreateCommitTree(string RepositoryName, string[] Files, string SaveName)
+    private async Task<TreeResponse> CreateCommitTree(string[] Files, string SaveName)
     {
-        Commit latestCommit = await GetLatestCommit(RepositoryName);
+        Commit latestCommit = await GetLatestCommit();
         NewTree commitTree = new NewTree { BaseTree = latestCommit.Tree.Sha };
 
         foreach (string file in Files)
@@ -156,7 +150,7 @@ public class GitService
             {
                 string commitFile = file.Replace(@"\", "/");
                 System.Diagnostics.Debug.WriteLine(commitFile);
-                BlobReference fileBlob = await CreateFileBlob(RepositoryName, commitFile);
+                BlobReference fileBlob = await CreateFileBlob(commitFile);
 
                 string fileName = Path.GetFileName(file);
                 System.Diagnostics.Debug.WriteLine($"{SaveName}/{fileName}");
@@ -171,7 +165,7 @@ public class GitService
         return tree;
     }
 
-    private async Task<Reference> CreateNewCommit(string RepositoryName, string CommitMessage, Commit LatestCommit, TreeResponse Tree)
+    private async Task<Reference> CreateNewCommit(string CommitMessage, Commit LatestCommit, TreeResponse Tree)
     {
         NewCommit newCommit = new NewCommit(CommitMessage, Tree.Sha, LatestCommit.Sha);
 

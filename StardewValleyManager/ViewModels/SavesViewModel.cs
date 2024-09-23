@@ -48,7 +48,7 @@ public partial class SavesViewModel : ViewModelBase
 
         LoadSaveLocations();
 
-        git.Authenticate();
+        //git.Authenticate();
         //git.CheckAndCreateRepository("test-repo2");
     }
 
@@ -113,7 +113,7 @@ public partial class SavesViewModel : ViewModelBase
     {
         System.Diagnostics.Debug.WriteLine($"Loading save history for {Save.Name}");
 
-        IReadOnlyList<GitHubCommit> commitHistory = await git.GetCommitHistory(repoName, Save.Name);
+        IReadOnlyList<GitHubCommit> commitHistory = await git.GetCommitHistory(Save.Name);
 
         Save.SaveHistory.Clear();
 
@@ -123,7 +123,7 @@ public partial class SavesViewModel : ViewModelBase
             item.CommitSha = commit.Sha;
             item.CommitDate = commit.Commit.Author.Date.ToString();
 
-            string saveGameInfo = await git.GetCommitContent(repoName, $"{Save.Name}/SaveGameInfo", commit.Sha);
+            string saveGameInfo = await git.GetCommitContent($"{Save.Name}/SaveGameInfo", commit.Sha);
 
             item.SaveService = new SaveFileService();
             item.SaveService.LoadSaveGameInfoXML(saveGameInfo);
@@ -177,9 +177,9 @@ public partial class SavesViewModel : ViewModelBase
 
         System.Diagnostics.Debug.WriteLine($"Getting content from commit for save file {SaveName}");
 
-        Commit latestCommit = await git.GetLatestCommit(repoName);
+        Commit latestCommit = await git.GetLatestCommit();
 
-        string commitContent = await git.GetCommitContent(repoName, $"{SaveName}/{SaveName}", latestCommit.Sha);
+        string commitContent = await git.GetCommitContent($"{SaveName}/{SaveName}", latestCommit.Sha);
 
         Directory.CreateDirectory($"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/StardewValley/Save_Backups");
 
