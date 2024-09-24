@@ -34,14 +34,17 @@ public partial class SavesViewModel : ViewModelBase
 
     private SettingsService settingsService;
 
+    private GameSaveFileService saveService;
+
     private string repoName;
 
     private string saveLocation;
 
-    public SavesViewModel(GitService gitService, SettingsService settingsService)
+    public SavesViewModel(GitService gitService, SettingsService settingsService, GameSaveFileService saveService)
     {
         git = gitService;
         this.settingsService = settingsService;
+        this.saveService = saveService;
 
         repoName = settingsService.GetSettingsValue("repository");
         saveLocation = settingsService.GetSettingsValue("savesLocation");
@@ -64,19 +67,21 @@ public partial class SavesViewModel : ViewModelBase
         foreach (string folder in saveFolders)
         {
             System.Diagnostics.Debug.WriteLine(folder);
+
+            FileInfo fi = new FileInfo($"{saveLocation}/{folder}");
+
             SaveInfoModel info = new SaveInfoModel();
             info.Name = folder;
-            info.Date = "08/29/2024";
+            info.Date = fi.LastWriteTime.ToShortDateString();
             info.IsEnabled = true;
             info.IsVisible = true;
             info.LoadFarmName();
 
-            info.SaveService = new SaveFileService();
-            info.SaveService.LoadSaveFile($"{saveLocation}/{folder}/{folder}");
-            info.SaveService.LoadSaveGameInfoFile($"{saveLocation}/{folder}/SaveGameInfo");
+            saveService.LoadSaveFile($"{saveLocation}/{folder}/{folder}");
+            saveService.LoadSaveGameInfoFile($"{saveLocation}/{folder}/SaveGameInfo");
 
-            info.PlayerName = info.SaveService.GetPlayerName();
-            info.FarmType = info.SaveService.GetFarmType();
+            info.PlayerName = saveService.GetPlayerName();
+            info.FarmType = saveService.GetFarmType();
 
             Saves.Add(info);
         }
@@ -119,33 +124,26 @@ public partial class SavesViewModel : ViewModelBase
 
         foreach (GitHubCommit commit in commitHistory)
         {
+            string commitSHA = commit.Sha;
+            DateTimeOffset commitDateOffset = commit.Commit.Author.Date;
+
             SaveHistoryItemModel item = new SaveHistoryItemModel();
-            item.CommitSha = commit.Sha;
-            item.CommitDate = commit.Commit.Author.Date.ToString();
+            item.CommitSha = commitSHA.Substring(0, 7);
+            item.CommitDate = commitDateOffset.ToLocalTime().LocalDateTime.ToString();
 
-            string saveGameInfo = await git.GetCommitContent($"{Save.Name}/SaveGameInfo", commit.Sha);
+            string saveGameInfo = await git.GetCommitContent($"{Save.Name}/SaveGameInfo", commitSHA);
 
-            item.SaveService = new SaveFileService();
-            item.SaveService.LoadSaveGameInfoXML(saveGameInfo);
-            item.Year = item.SaveService.GetYear();
-            item.Season = item.SaveService.GetSeason();
-            item.Day = item.SaveService.GetDay();
+            saveService.LoadSaveGameInfoXML(saveGameInfo);
+
+            item.Year = saveService.GetYear();
+            item.Season = saveService.GetSeason();
+            item.Day = saveService.GetDay();
 
             Save.SaveHistory.Add(item);
         }
 
         ActiveSave = Save;
     }
-
-    /*[RelayCommand(CanExecute = nameof(CanCommitSave))]
-    private async Task CommitAllSaves()
-    {
-        Saving = true;
-
-        await git.CommitAllSaves(Saves.ToArray());
-
-        Saving = false;
-    }*/
 
     [RelayCommand(CanExecute = nameof(CanCommitSave))]
     private async Task CommitSelectedSaves()

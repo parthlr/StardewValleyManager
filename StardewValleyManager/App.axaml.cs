@@ -46,7 +46,7 @@ public partial class App : Application
         IServiceCollection services = new ServiceCollection();
 
         services.AddSingleton<GitService>();
-        services.AddSingleton<SaveFileService>();
+        services.AddSingleton<GameSaveFileService>();
         services.AddSingleton<SettingsService>();
 
         services.AddSingleton<IViewModelFactory<SavesViewModel>, SavesViewModelFactory>();

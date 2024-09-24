@@ -6,19 +6,20 @@ using System.Threading.Tasks;
 using System.Xml;
 
 namespace StardewValleyManager.Services;
-public class SaveFileService
+public class GameSaveFileService
 {
 
-    XmlDocument doc = new XmlDocument();
-    XmlDocument saveGameInfoDoc = new XmlDocument();
+    XmlDocument saveFileDoc;        // Save file
+    XmlDocument saveGameInfoDoc;    // SaveGameInfo file
 
     private string[] farmTypes = { "Standard Farm","Riverland Farm", "Forest Farm", "Hilltop Farm", "Wilderness Farm", "Four Corners Farm", "Beach Farm", "Meadowlands Farm" };
 
     private string[] seasons = { "Spring", "Summer", "Fall", "Winter" };
 
-    public SaveFileService()
+    public GameSaveFileService()
     {
-        
+        saveFileDoc = new XmlDocument();
+        saveGameInfoDoc = new XmlDocument();
     }
 
     public void LoadSaveGameInfoXML(string XMLContent)
@@ -28,7 +29,7 @@ public class SaveFileService
 
     public void LoadSaveFile(string SavePath)
     {
-        doc.Load(SavePath);
+        saveFileDoc.Load(SavePath);
     }
 
     public void LoadSaveGameInfoFile(string SavePath)
@@ -48,7 +49,7 @@ public class SaveFileService
 
     public string GetFarmType()
     {
-        XmlNode? farmType = doc.SelectSingleNode("SaveGame/whichFarm");
+        XmlNode? farmType = saveFileDoc.SelectSingleNode("SaveGame/whichFarm");
         if (farmType == null)
         {
             return "Unknown";

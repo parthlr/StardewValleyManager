@@ -30,8 +30,6 @@ public partial class SaveInfoModel : ObservableObject
 
     public string? Name { get; set; }
 
-    public SaveFileService SaveService { get; set; }
-
     public void LoadFarmName()
     {
         int underscoreIndex = Name.Length - 1;
@@ -65,6 +63,4 @@ public partial class SaveHistoryItemModel : ObservableObject
 
     [ObservableProperty]
     private string _day = "";
-
-    public SaveFileService SaveService { get; set; }
 }

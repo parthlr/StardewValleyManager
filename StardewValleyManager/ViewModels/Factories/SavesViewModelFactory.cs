@@ -13,14 +13,17 @@ public class SavesViewModelFactory : IViewModelFactory<SavesViewModel>
 
     private readonly SettingsService _settingsService;
 
-    public SavesViewModelFactory(GitService gitService, SettingsService settingsService)
+    private readonly GameSaveFileService _gameSaveFileService;
+
+    public SavesViewModelFactory(GitService gitService, SettingsService settingsService, GameSaveFileService gameSaveFileService)
     {
         _gitService = gitService;
         _settingsService = settingsService;
+        _gameSaveFileService = gameSaveFileService;
     }
 
     public SavesViewModel CreateViewModel()
     {
-        return new SavesViewModel(_gitService, _settingsService);
+        return new SavesViewModel(_gitService, _settingsService, _gameSaveFileService);
     }
 }
