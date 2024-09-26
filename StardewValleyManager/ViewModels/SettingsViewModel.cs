@@ -8,6 +8,8 @@ using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using StardewValleyManager.Services;
+using StardewValleyManager.ViewModels.Factories;
+using StardewValleyManager.Views;
 
 namespace StardewValleyManager.ViewModels;
 
@@ -33,9 +35,12 @@ public partial class SettingsViewModel : ViewModelBase
 
     private SettingsService settingsService;
 
-    public SettingsViewModel(SettingsService settingsService)
+    private IWindowFactory<GitAuthenticationWindow> gitAuthenticationWindowFactory;
+
+    public SettingsViewModel(SettingsService settingsService, IWindowFactory<GitAuthenticationWindow> gitAuthenticationWindowFactory)
     {
         this.settingsService = settingsService;
+        this.gitAuthenticationWindowFactory = gitAuthenticationWindowFactory;
 
         ReadSettings();
     }
@@ -47,6 +52,12 @@ public partial class SettingsViewModel : ViewModelBase
         GitToken = settingsService.GetSettingsValue("gitToken");
         GitUsername = settingsService.GetSettingsValue("username");
         RepositoryName = settingsService.GetSettingsValue("repository");
+    }
+
+    [RelayCommand]
+    private void OpenGitAuthenticationWindow()
+    {
+        gitAuthenticationWindowFactory.CreateWindow();
     }
 
     [RelayCommand]

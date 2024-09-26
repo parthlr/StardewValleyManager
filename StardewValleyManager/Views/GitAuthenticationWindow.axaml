@@ -1,0 +1,60 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:vm="using:StardewValleyManager.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:views="clr-namespace:StardewValleyManager.Views"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="450"
+        x:Class="StardewValleyManager.Views.GitAuthenticationWindow"
+		xmlns:ui="using:FluentAvalonia.UI.Controls"
+		x:DataType="vm:GitAuthenticationViewModel"
+        Title="Git Authentication" Height="500" Width="450">
+	<StackPanel Spacing="10"
+				Margin="12">
+		<TextBlock Text="1. Create a GitHub Account"
+					FontSize="20"
+					FontWeight="SemiBold"/>
+		<TextBlock Text="If you don't already have one, create a GitHub account. This is the account where your saves will be stored."
+					FontSize="14"
+					Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+					TextWrapping="Wrap"/>
+		<HyperlinkButton Content="https://github.com/signup"
+							FontSize="14"
+							Command="{Binding OpenWebpageCommand}"
+							CommandParameter="https://github.com/signup"/>
+		<TextBlock Text="2. Generate a User Code"
+					FontSize="20"
+					FontWeight="SemiBold"/>
+		<TextBlock Text="Generate a user code below. This code will be used to authenticate your account."
+					FontSize="14"
+					Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+					TextWrapping="Wrap"/>
+		<Grid ColumnDefinitions="Auto,3*">
+			<Button Grid.Column="0"
+					Content="Generate"
+					Margin="0 0 12 0"
+					Command="{Binding GenerateUserCodeAndWaitForAuthenticationCommand}"/>
+			<TextBox Grid.Column="1"
+						Text="{Binding UserCode}"
+						HorizontalAlignment="Stretch"
+						IsReadOnly="True"/>
+		</Grid>
+		<TextBlock Text="3. Authenticate with your User Code"
+					FontSize="20"
+					FontWeight="SemiBold"/>
+		<TextBlock Text="Log into your GitHub account using the link below. When prompted, input the code you just generated to allow the client to create a repository and save backups to that repository on your behalf."
+					FontSize="14"
+					Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+					TextWrapping="Wrap"/>
+		<HyperlinkButton Content="https://github.com/login/device"
+							FontSize="14"
+							Command="{Binding OpenWebpageCommand}"
+							CommandParameter="https://github.com/login/device"/>
+		<Grid ColumnDefinitions="Auto,Auto">
+			<TextBlock Grid.Column="0"
+						Text="Authenticated:  "/>
+			<TextBlock Grid.Column="1"
+						Text="{Binding IsAuthenticated}"/>
+		</Grid>
+	</StackPanel>
+</Window>

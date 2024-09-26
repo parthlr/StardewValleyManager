@@ -16,24 +16,56 @@ public class GitService
     public string RepositoryName { get; set; }
     public GitHubClient Client { get; set; }
 
+    private string _clientID;
+
     public GitService(SettingsService settingsService)
     {
         AuthToken = settingsService.GetSettingsValue("gitToken");
         User = settingsService.GetSettingsValue("username");
         RepositoryName = settingsService.GetSettingsValue("repository");
 
+        _clientID = settingsService.GetSettingsValue("clientID");
+
         Client = new GitHubClient(new ProductHeaderValue("StardewValleyManager"));
 
         if (AuthToken != null && AuthToken.Length > 0)
         {
-            Authenticate();
+            InitCredentials();
         }
     }
 
-    public void Authenticate()
+    public void InitCredentials()
     {
         Credentials credentials = new Credentials(AuthToken);
         Client.Credentials = credentials;
+    }
+
+    public async Task<OauthDeviceFlowResponse> GenerateUserCode()
+    {
+        string repo = RepositoryName;
+        //await CheckAndCreateRepository(repo);
+
+        OauthDeviceFlowRequest authenticationRequest = new OauthDeviceFlowRequest(_clientID);
+        authenticationRequest.Scopes.Add("public_repo");
+
+        OauthDeviceFlowResponse authenticationResponse = await Client.Oauth.InitiateDeviceFlow(authenticationRequest);
+
+        return authenticationResponse;
+    }
+
+    public async Task<string> GetUserAuthToken(OauthDeviceFlowResponse authResponse)
+    {
+        OauthToken authToken = await Client.Oauth.CreateAccessTokenForDeviceFlow(_clientID, authResponse);
+
+        return authToken.AccessToken;
+    }
+
+    public async Task<string> GetUserLogin()
+    {
+        User user = await Client.User.Current();
+        string username = user.Login;
+
+        return username;
     }
 
     public async Task CheckAndCreateRepository(string RepositoryName)

@@ -29,4 +29,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\GitAuthenticationWindow.axaml" />
+  </ItemGroup>
 </Project>

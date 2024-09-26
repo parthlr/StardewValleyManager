@@ -35,7 +35,8 @@
                                          ActionIconSource="Open">
 					<ui:SettingsExpanderItem.Footer>
 						<Button Width="175"
-								Content="Setup Account"/>
+								Content="Setup Account"
+								Command="{Binding OpenGitAuthenticationWindowCommand}"/>
 					</ui:SettingsExpanderItem.Footer>
 				</ui:SettingsExpanderItem>
 				<ui:SettingsExpanderItem Content="Authentication Key"

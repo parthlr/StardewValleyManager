@@ -51,6 +51,9 @@ public partial class App : Application
 
         services.AddSingleton<IViewModelFactory<SavesViewModel>, SavesViewModelFactory>();
         services.AddSingleton<IViewModelFactory<SettingsViewModel>, SettingsViewModelFactory>();
+        services.AddSingleton<IViewModelFactory<GitAuthenticationViewModel>, GitAuthenticationViewModelFactory>();
+
+        services.AddSingleton<IWindowFactory<GitAuthenticationWindow>, GitAuthenticationWindowFactory>();
 
         services.AddScoped<MainViewModel>();
 
