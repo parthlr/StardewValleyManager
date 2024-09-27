@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Octokit;
+using System.Linq;
 
 namespace StardewValleyManager.Services;
 public class GitService
@@ -131,6 +132,59 @@ public class GitService
         IReadOnlyList<GitHubCommit> commits = await Client.Repository.Commit.GetAll(User, RepositoryName, commitRequest);
 
         return commits;
+    }
+
+    public async Task<IReadOnlyDictionary<string, IReadOnlyList<RepositoryContent>>> GetSavesFromRepository()
+    {
+        IReadOnlyList<RepositoryContent> repoContents = await Client.Repository.Content.GetAllContents(User, RepositoryName);
+
+        List<RepositoryContent> potentialSaves = new List<RepositoryContent>();
+        foreach (RepositoryContent content in repoContents)
+        {
+            if (content.Type == ContentType.Dir)
+            {
+                potentialSaves.Add(content);
+            }
+        }
+        
+        Dictionary<string, IReadOnlyList<RepositoryContent>> downloadURLs = new Dictionary<string, IReadOnlyList<RepositoryContent>>();
+        foreach (RepositoryContent saveFolder in potentialSaves)
+        {
+            IReadOnlyList<RepositoryContent> saveContents = await Client.Repository.Content.GetAllContents(User, RepositoryName, saveFolder.Name);
+
+            bool hasSaveFile = false;
+            bool hasSaveGameInfoFile = false;
+
+            foreach (RepositoryContent saveFile in saveContents)
+            {
+                if (saveFile.Type == ContentType.File)
+                {
+                    if (saveFile.Name.Equals(saveFolder.Name))
+                    {
+                        hasSaveFile = true;
+                    } else if (saveFile.Name.Equals("SaveGameInfo"))
+                    {
+                        hasSaveGameInfoFile = true;
+                    }
+                }
+            }
+            
+            if (hasSaveFile && hasSaveGameInfoFile)
+            {
+                downloadURLs[saveFolder.Name] = saveContents;
+            }
+        }
+
+        return downloadURLs.AsReadOnly();
+    }
+
+    public async Task<IReadOnlyList<string>> GetDownloadURLsFromSave(string saveName)
+    {
+        List<string> downloadURLs = new List<string>();
+
+        IReadOnlyList<RepositoryContent> saveContents = await Client.Repository.Content.GetAllContents(User, RepositoryName, saveName);
+
+        return downloadURLs.AsReadOnly();
     }
 
     public async Task<string> GetCommitContent(string FileName, string CommitSha)

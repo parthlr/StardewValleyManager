@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -86,6 +87,84 @@ public partial class SavesViewModel : ViewModelBase
             Saves.Add(info);
         }
 
+    }
+
+    [RelayCommand]
+    private async Task LoadMissingSavesFromGitHub()
+    {
+        IReadOnlyDictionary<string, IReadOnlyList<RepositoryContent>> savesInGitHub = await git.GetSavesFromRepository();
+
+        List<string> savesToDownload = new List<string>();
+
+        // Get saves that need to be downloaded
+        foreach (string gitSave in savesInGitHub.Keys)
+        {
+            bool containsSave = false;
+            foreach (SaveInfoModel save in Saves)
+            {
+                if (gitSave.Equals(save.Name))
+                {
+                    containsSave = true;
+                    break;
+                }
+            }
+
+            if (!containsSave)
+            {
+                savesToDownload.Add(gitSave);
+            }
+        }
+
+        // Download missing saves
+        foreach (string save in savesToDownload)
+        {
+            IReadOnlyList<RepositoryContent> downloadContent = savesInGitHub[save];
+            Directory.CreateDirectory($"{saveLocation}/{save}");
+
+            foreach (RepositoryContent file in downloadContent)
+            {
+                // Download each file to the save
+                bool downloadResult = await DownloadFromURL(file.DownloadUrl, $"{saveLocation}/{save}/{file.Name}");
+            }
+        }
+
+        LoadSaveLocations();
+    }
+
+    private async Task<bool> DownloadFromURL(string url, string location)
+    {
+        using (HttpClient client = new HttpClient())
+        {
+            using (HttpResponseMessage response = await client.GetAsync(url))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    byte[] fileContent = await response.Content.ReadAsByteArrayAsync();
+                    if (fileContent != null)
+                    {
+                        try
+                        {
+                            using (FileStream fs = new FileStream(location, System.IO.FileMode.Create, FileAccess.Write))
+                            {
+                                fs.Write(fileContent, 0, fileContent.Length);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            return false;
+                        }
+                    } else
+                    {
+                        return false;
+                    }
+                } else
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     partial void OnSearchQueryChanged(string value)
