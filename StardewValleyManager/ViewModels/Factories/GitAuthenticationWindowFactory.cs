@@ -19,4 +19,6 @@ public class GitAuthenticationWindowFactory : IWindowFactory<GitAuthenticationWi
         GitAuthenticationWindow gitAuthenticationWindow = new GitAuthenticationWindow(gitAuthenticationViewModel);
         gitAuthenticationWindow.Show();
     }
+
+    public void CreateWindow(object param) { }
 }

@@ -11,6 +11,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Octokit;
 using StardewValleyManager.Services;
+using StardewValleyManager.ViewModels.Factories;
+using StardewValleyManager.Views;
 
 namespace StardewValleyManager.ViewModels;
 public partial class SavesViewModel : ViewModelBase
@@ -37,15 +39,19 @@ public partial class SavesViewModel : ViewModelBase
 
     private GameSaveFileService saveService;
 
+    private IWindowFactory<CommitPropertiesWindow> commitPropertiesWindowFactory;
+
     private string repoName;
 
     private string saveLocation;
 
-    public SavesViewModel(GitService gitService, SettingsService settingsService, GameSaveFileService saveService)
+    public SavesViewModel(GitService gitService, SettingsService settingsService, GameSaveFileService saveService, IWindowFactory<CommitPropertiesWindow> commitPropertiesWindowFactory)
     {
         git = gitService;
         this.settingsService = settingsService;
         this.saveService = saveService;
+
+        this.commitPropertiesWindowFactory = commitPropertiesWindowFactory;
 
         repoName = settingsService.GetSettingsValue("repository");
         saveLocation = settingsService.GetSettingsValue("savesLocation");
@@ -217,6 +223,8 @@ public partial class SavesViewModel : ViewModelBase
             item.Year = saveService.GetYear();
             item.Season = saveService.GetSeason();
             item.Day = saveService.GetDay();
+            item.Money = saveService.GetPlayerMoney();
+            item.TotalMoneyEarned = saveService.GetTotalEarnedMoney();
 
             Save.SaveHistory.Add(item);
         }
@@ -243,6 +251,12 @@ public partial class SavesViewModel : ViewModelBase
         await git.CommitSaveFolder(SaveName);
 
         Saving = false;
+    }
+
+    [RelayCommand]
+    private void OpenCommitProperties(SaveHistoryItemModel saveProperties)
+    {
+        commitPropertiesWindowFactory.CreateWindow(saveProperties);
     }
 
     private bool CanCommitSave() => !Saving;

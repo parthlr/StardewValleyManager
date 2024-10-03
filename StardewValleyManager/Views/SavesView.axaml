@@ -133,7 +133,10 @@
 					<DataGridTemplateColumn Width="Auto">
 						<DataGridTemplateColumn.CellTemplate>
 							<DataTemplate>
-								<Button Content="View" Margin="10" />
+								<Button Content="View"
+										Margin="10"
+										Command="{Binding $parent[DataGrid].((vm:SavesViewModel)DataContext).OpenCommitPropertiesCommand}"
+										CommandParameter="{Binding }"/>
 							</DataTemplate>
 						</DataGridTemplateColumn.CellTemplate>
 					</DataGridTemplateColumn>

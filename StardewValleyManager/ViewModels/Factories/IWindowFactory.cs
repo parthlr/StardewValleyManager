@@ -10,4 +10,6 @@ namespace StardewValleyManager.ViewModels.Factories;
 public interface IWindowFactory<T> where T : Window
 {
     void CreateWindow();
+
+    void CreateWindow(object param);
 }

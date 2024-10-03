@@ -58,6 +58,28 @@ public class GameSaveFileService
         return farmTypes[farmIndex];
     }
 
+    public int GetPlayerMoney()
+    {
+        XmlNode? playerMoney = saveGameInfoDoc.SelectSingleNode("Farmer/money");
+        if (playerMoney == null)
+        {
+            return 0;
+        }
+        int playerMoneyValue = Convert.ToInt32(playerMoney.InnerText);
+        return playerMoneyValue;
+    }
+
+    public int GetTotalEarnedMoney()
+    {
+        XmlNode? earnedMoney = saveGameInfoDoc.SelectSingleNode("Farmer/totalMoneyEarned");
+        if (earnedMoney == null)
+        {
+            return 0;
+        }
+        int totalEarnedMoney = Convert.ToInt32(earnedMoney.InnerText);
+        return totalEarnedMoney;
+    }
+
     public string GetYear()
     {
         XmlNode? year = saveGameInfoDoc.SelectSingleNode("Farmer/yearForSaveGame");
@@ -87,6 +109,32 @@ public class GameSaveFileService
             return "Unknown";
         }
         return day.InnerText;
+    }
+
+    public Dictionary<string, int> GetPlayerRelationships()
+    {
+        Dictionary<string, int> relationshipStatus = new Dictionary<string, int>();
+
+        XmlNodeList? friendshipData = saveGameInfoDoc.SelectNodes("Farmer/friendshipData");
+
+        foreach (XmlNode friendshipItem in friendshipData)
+        {
+            XmlNode? npcNameNode = friendshipItem.SelectSingleNode("key/string");
+            if (npcNameNode == null)
+            {
+                continue;
+            }
+
+            XmlNode? relationshipPointsNode = friendshipItem.SelectSingleNode("value/Friendship/Points");
+            if (relationshipPointsNode == null)
+            {
+                continue;
+            }
+
+            relationshipStatus[npcNameNode.InnerText] = Convert.ToInt32(relationshipPointsNode.InnerText);
+        }
+
+        return relationshipStatus;
     }
 
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using StardewValleyManager.Models;
 using StardewValleyManager.Services;
 
 public partial class SaveInfoModel : ObservableObject
@@ -63,4 +64,13 @@ public partial class SaveHistoryItemModel : ObservableObject
 
     [ObservableProperty]
     private string _day = "";
+
+    [ObservableProperty]
+    private int _money = 0;
+
+    [ObservableProperty]
+    private int _totalMoneyEarned = 0;
+
+    [ObservableProperty]
+    private ObservableCollection<PlayerRelationshipModel> _relationshipStatus;
 }

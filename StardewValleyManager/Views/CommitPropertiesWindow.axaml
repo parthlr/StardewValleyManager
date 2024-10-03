@@ -1,0 +1,102 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:vm="using:StardewValleyManager.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:views="clr-namespace:StardewValleyManager.Views"
+		xmlns:ui="using:FluentAvalonia.UI.Controls"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+        x:Class="StardewValleyManager.Views.CommitPropertiesWindow"
+		x:DataType="vm:CommitPropertiesViewModel"
+        Title="View Save" Width="600" Height="400">
+	<Grid RowDefinitions="Auto,*">
+		<ui:CommandBar Grid.Row="0"
+					   DefaultLabelPosition="Right">
+			<ui:CommandBar.PrimaryCommands>
+				<ui:CommandBarButton Height="40"
+									 HorizontalAlignment="Center"
+									 HorizontalContentAlignment="Center"
+									 IconSource="Open"
+									 Label="Open"
+									 ToolTip.Tip="Open in GitHub"
+									 ToolTip.VerticalOffset="10" />
+				<ui:CommandBarButton Height="40"
+									 HorizontalAlignment="Center"
+									 HorizontalContentAlignment="Center"
+									 IconSource="Download"
+									 Label="Load"
+									 ToolTip.Tip="Download this to your saves"
+									 ToolTip.VerticalOffset="10" />
+			</ui:CommandBar.PrimaryCommands>
+		</ui:CommandBar>
+		<ui:TabView Grid.Row="1"
+					TabWidthMode="SizeToContent"
+					CanReorderTabs="False"
+					IsAddTabButtonVisible="False"
+					VerticalAlignment="Stretch"
+					Margin="10">
+			<ui:TabViewItem Header="Properties     "
+							IconSource="Settings"
+							IsClosable="False">
+				<ScrollViewer VerticalScrollBarVisibility="Visible"
+							  Margin="10">
+					<Grid ColumnDefinitions="100,*"
+						  RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+						  HorizontalAlignment="Stretch"
+						  VerticalAlignment="Stretch">
+						<TextBlock Grid.Row="0"
+								   Grid.Column="0"
+								   Text="Money:"/>
+						<TextBlock Grid.Row="0"
+								   Grid.Column="1"
+								   xml:space="preserve"
+								   Text="{Binding SaveProperties.Money}"/>
+						<TextBlock Grid.Row="1"
+								   Grid.Column="0"
+								   Text="Total Money:"/>
+						<TextBlock Grid.Row="1"
+								   Grid.Column="1"
+								   xml:space="preserve"
+								   Text="{Binding SaveProperties.TotalMoneyEarned}"/>
+						<TextBlock Grid.Row="2"
+								   Grid.Column="0"
+								   Text="Year:"/>
+						<TextBlock Grid.Row="2"
+								   Grid.Column="1"
+								   xml:space="preserve"
+								   Text="{Binding SaveProperties.Year}"/>
+						<TextBlock Grid.Row="3"
+								   Grid.Column="0"
+								   Text="Season:"/>
+						<TextBlock Grid.Row="3"
+								   Grid.Column="1"
+								   xml:space="preserve"
+								   Text="{Binding SaveProperties.Season}"/>
+						<TextBlock Grid.Row="4"
+								   Grid.Column="0"
+								   Text="Day:"/>
+						<TextBlock Grid.Row="4"
+								   Grid.Column="1"
+								   xml:space="preserve"
+								   Text="{Binding SaveProperties.Day}"/>
+					</Grid>
+				</ScrollViewer>
+			</ui:TabViewItem>
+			<ui:TabViewItem Header="Inventory      "
+							IconSource="Document"
+							IsClosable="False">
+				<TextBlock Text="Test text 2"/>
+			</ui:TabViewItem>
+			<ui:TabViewItem Header="Skills         "
+							IconSource="Document"
+							IsClosable="False">
+				<TextBlock Text="Test text 2"/>
+			</ui:TabViewItem>
+			<ui:TabViewItem Header="Relationships  "
+							IconSource="Document"
+							IsClosable="False">
+				<TextBlock Text="Test text 3"/>
+			</ui:TabViewItem>
+		</ui:TabView>
+	</Grid>
+</Window>
