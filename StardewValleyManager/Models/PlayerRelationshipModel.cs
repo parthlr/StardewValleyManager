@@ -11,9 +11,12 @@ public partial class PlayerRelationshipModel : ObservableObject
 {
 
     [ObservableProperty]
-    private string _npcName;
+    private string _npcName = "";
 
     [ObservableProperty]
     private int _friendshipPoints;
+
+    [ObservableProperty]
+    private string _friendshipStatus = "";
 
 }

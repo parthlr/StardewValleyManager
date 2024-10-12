@@ -10,6 +10,7 @@ using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Octokit;
+using StardewValleyManager.Models;
 using StardewValleyManager.Services;
 using StardewValleyManager.ViewModels.Factories;
 using StardewValleyManager.Views;
@@ -201,9 +202,11 @@ public partial class SavesViewModel : ViewModelBase
     [RelayCommand]
     private async Task LoadSaveHistory(SaveInfoModel Save)
     {
-        System.Diagnostics.Debug.WriteLine($"Loading save history for {Save.Name}");
+        string saveName = Save.Name;
 
-        IReadOnlyList<GitHubCommit> commitHistory = await git.GetCommitHistory(Save.Name);
+        System.Diagnostics.Debug.WriteLine($"Loading save history for {saveName}");
+
+        IReadOnlyList<GitHubCommit> commitHistory = await git.GetCommitHistory(saveName);
 
         Save.SaveHistory.Clear();
 
@@ -213,10 +216,11 @@ public partial class SavesViewModel : ViewModelBase
             DateTimeOffset commitDateOffset = commit.Commit.Author.Date;
 
             SaveHistoryItemModel item = new SaveHistoryItemModel();
+            item.SaveName = saveName;
             item.CommitSha = commitSHA.Substring(0, 7);
             item.CommitDate = commitDateOffset.ToLocalTime().LocalDateTime.ToString();
 
-            string saveGameInfo = await git.GetCommitContent($"{Save.Name}/SaveGameInfo", commitSHA);
+            string saveGameInfo = await git.GetCommitContent($"{saveName}/SaveGameInfo", commitSHA);
 
             saveService.LoadSaveGameInfoXML(saveGameInfo);
 
@@ -225,6 +229,18 @@ public partial class SavesViewModel : ViewModelBase
             item.Day = saveService.GetDay();
             item.Money = saveService.GetPlayerMoney();
             item.TotalMoneyEarned = saveService.GetTotalEarnedMoney();
+
+            ObservableCollection<PlayerRelationshipModel> playerRelationships = new ObservableCollection<PlayerRelationshipModel>(saveService.GetPlayerRelationships());
+            item.RelationshipStatus = playerRelationships;
+
+            item.FarmingLevel = saveService.GetPlayerFarmingLevel();
+            item.MiningLevel = saveService.GetPlayerMiningLevel();
+            item.CombatLevel = saveService.GetPlayerCombatLevel();
+            item.ForagingLevel = saveService.GetPlayerForagingLevel();
+            item.FishingLevel = saveService.GetPlayerFishingLevel();
+
+            ObservableCollection<InventoryItemModel> playerInventory = new ObservableCollection<InventoryItemModel>(saveService.GetPlayerInventory());
+            item.PlayerInventory = playerInventory;
 
             Save.SaveHistory.Add(item);
         }

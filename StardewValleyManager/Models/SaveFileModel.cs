@@ -50,6 +50,10 @@ public partial class SaveInfoModel : ObservableObject
 
 public partial class SaveHistoryItemModel : ObservableObject
 {
+    // General properties
+    [ObservableProperty]
+    private string _saveName = "";
+
     [ObservableProperty]
     private string _commitSha = "";
 
@@ -71,6 +75,27 @@ public partial class SaveHistoryItemModel : ObservableObject
     [ObservableProperty]
     private int _totalMoneyEarned = 0;
 
+    // NPC relationship status
     [ObservableProperty]
     private ObservableCollection<PlayerRelationshipModel> _relationshipStatus;
+
+    // Skill levels
+    [ObservableProperty]
+    private int _farmingLevel = 0;
+
+    [ObservableProperty]
+    private int _miningLevel = 0;
+
+    [ObservableProperty]
+    private int _combatLevel = 0;
+
+    [ObservableProperty]
+    private int _foragingLevel = 0;
+
+    [ObservableProperty]
+    private int _fishingLevel = 0;
+
+    // Player inventory
+    [ObservableProperty]
+    private ObservableCollection<InventoryItemModel> _playerInventory;
 }

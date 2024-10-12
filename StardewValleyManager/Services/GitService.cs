@@ -178,13 +178,11 @@ public class GitService
         return downloadURLs.AsReadOnly();
     }
 
-    public async Task<IReadOnlyList<string>> GetDownloadURLsFromSave(string saveName)
+    public async Task<IReadOnlyList<RepositoryContent>> GetCommitFiles(string saveFolder, string commitSHA)
     {
-        List<string> downloadURLs = new List<string>();
-
-        IReadOnlyList<RepositoryContent> saveContents = await Client.Repository.Content.GetAllContents(User, RepositoryName, saveName);
-
-        return downloadURLs.AsReadOnly();
+        IReadOnlyList<RepositoryContent> repositoryContents = await Client.Repository.Content.GetAllContentsByRef(User, RepositoryName, saveFolder, commitSHA);
+        
+        return repositoryContents;
     }
 
     public async Task<string> GetCommitContent(string FileName, string CommitSha)

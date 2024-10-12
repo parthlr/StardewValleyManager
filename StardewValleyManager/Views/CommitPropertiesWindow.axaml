@@ -19,14 +19,16 @@
 									 IconSource="Open"
 									 Label="Open"
 									 ToolTip.Tip="Open in GitHub"
-									 ToolTip.VerticalOffset="10" />
+									 ToolTip.VerticalOffset="10"
+									 Command="{Binding OpenCommitPageCommand}"/>
 				<ui:CommandBarButton Height="40"
 									 HorizontalAlignment="Center"
 									 HorizontalContentAlignment="Center"
 									 IconSource="Download"
 									 Label="Load"
 									 ToolTip.Tip="Download this to your saves"
-									 ToolTip.VerticalOffset="10" />
+									 ToolTip.VerticalOffset="10"
+									 Command="{Binding BackupAndLoadCommitCommand}"/>
 			</ui:CommandBar.PrimaryCommands>
 		</ui:CommandBar>
 		<ui:TabView Grid.Row="1"
@@ -85,17 +87,126 @@
 			<ui:TabViewItem Header="Inventory      "
 							IconSource="Document"
 							IsClosable="False">
-				<TextBlock Text="Test text 2"/>
+				<Grid RowDefinitions="Auto,*"
+					  Margin="10">
+					<Grid Grid.Row="0"
+						  ColumnDefinitions="*,100,100,*">
+						<TextBlock Grid.Column="0"
+								   Text="Item Name"
+								   Theme="{StaticResource BodyStrongTextBlockStyle}"/>
+						<TextBlock Grid.Column="1"
+								   Text="Count"
+								   Theme="{StaticResource BodyStrongTextBlockStyle}"/>
+						<TextBlock Grid.Column="2"
+								   Text="Quality"
+								   Theme="{StaticResource BodyStrongTextBlockStyle}"/>
+						<TextBlock Grid.Column="3"
+								   Text="Price"
+								   Theme="{StaticResource BodyStrongTextBlockStyle}"/>
+					</Grid>
+					<ScrollViewer Grid.Row="1"
+								  VerticalScrollBarVisibility="Visible">
+						<ItemsControl ItemsSource="{Binding SaveProperties.PlayerInventory}">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<Grid ColumnDefinitions="*,100,100,*">
+										<TextBlock Grid.Column="0"
+												   Text="{Binding Name}"/>
+										<TextBlock Grid.Column="1"
+												   Text="{Binding StackCount}"/>
+										<TextBlock Grid.Column="2"
+												   Text="{Binding Quality}"/>
+										<TextBlock Grid.Column="3"
+												   Text="{Binding Price}"/>
+									</Grid>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</ScrollViewer>
+				</Grid>
 			</ui:TabViewItem>
 			<ui:TabViewItem Header="Skills         "
 							IconSource="Document"
 							IsClosable="False">
-				<TextBlock Text="Test text 2"/>
+				<ScrollViewer VerticalScrollBarVisibility="Visible"
+							  Margin="10">
+					<Grid ColumnDefinitions="100,*"
+						  RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+						  HorizontalAlignment="Stretch"
+						  VerticalAlignment="Stretch">
+						<TextBlock Grid.Row="0"
+								   Grid.Column="0"
+								   Text="Farming Level:"/>
+						<TextBlock Grid.Row="0"
+								   Grid.Column="1"
+								   xml:space="preserve"
+								   Text="{Binding SaveProperties.FarmingLevel}"/>
+						<TextBlock Grid.Row="1"
+								   Grid.Column="0"
+								   Text="Mining Level:"/>
+						<TextBlock Grid.Row="1"
+								   Grid.Column="1"
+								   xml:space="preserve"
+								   Text="{Binding SaveProperties.MiningLevel}"/>
+						<TextBlock Grid.Row="2"
+								   Grid.Column="0"
+								   Text="Combat Level:"/>
+						<TextBlock Grid.Row="2"
+								   Grid.Column="1"
+								   xml:space="preserve"
+								   Text="{Binding SaveProperties.CombatLevel}"/>
+						<TextBlock Grid.Row="3"
+								   Grid.Column="0"
+								   Text="Foraging Level:"/>
+						<TextBlock Grid.Row="3"
+								   Grid.Column="1"
+								   xml:space="preserve"
+								   Text="{Binding SaveProperties.ForagingLevel}"/>
+						<TextBlock Grid.Row="4"
+								   Grid.Column="0"
+								   Text="Fishing Level:"/>
+						<TextBlock Grid.Row="4"
+								   Grid.Column="1"
+								   xml:space="preserve"
+								   Text="{Binding SaveProperties.FishingLevel}"/>
+					</Grid>
+				</ScrollViewer>
 			</ui:TabViewItem>
 			<ui:TabViewItem Header="Relationships  "
 							IconSource="Document"
 							IsClosable="False">
-				<TextBlock Text="Test text 3"/>
+				<Grid RowDefinitions="Auto,*"
+					  Margin="10">
+					<Grid Grid.Row="0"
+							ColumnDefinitions="100,100,*">
+						<TextBlock Grid.Column="0"
+									Text="Name"
+									Theme="{StaticResource BodyStrongTextBlockStyle}"/>
+						<TextBlock Grid.Column="1"
+									Text="Points"
+									Theme="{StaticResource BodyStrongTextBlockStyle}"/>
+						<TextBlock Grid.Column="2"
+									Text="Status"
+									Theme="{StaticResource BodyStrongTextBlockStyle}"/>
+					</Grid>
+					<ScrollViewer Grid.Row="1"
+								  VerticalScrollBarVisibility="Visible">
+						<ItemsControl ItemsSource="{Binding SaveProperties.RelationshipStatus}">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<Grid ColumnDefinitions="100,100,*">
+										<TextBlock Grid.Column="0"
+												   Text="{Binding NpcName}"/>
+										<TextBlock Grid.Column="1"
+												   Text="{Binding FriendshipPoints}"/>
+										<TextBlock Grid.Column="2"
+												   Text="{Binding FriendshipStatus}"/>
+									</Grid>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</ScrollViewer>
+				</Grid>
 			</ui:TabViewItem>
 		</ui:TabView>
 	</Grid>
