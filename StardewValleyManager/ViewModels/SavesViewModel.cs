@@ -76,6 +76,11 @@ public partial class SavesViewModel : ViewModelBase
         {
             System.Diagnostics.Debug.WriteLine(folder);
 
+            if (!File.Exists($"{saveLocation}/{folder}/{folder}") || !File.Exists($"{saveLocation}/{folder}/SaveGameInfo"))
+            {
+                continue;
+            }
+
             FileInfo fi = new FileInfo($"{saveLocation}/{folder}");
 
             SaveInfoModel info = new SaveInfoModel();
