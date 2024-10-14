@@ -36,22 +36,26 @@
 						 VerticalAlignment="Stretch"
 						 Grid.Row="0"/>
 
-				<Grid ColumnDefinitions="1*,Auto,1*"
+				<Grid ColumnDefinitions="1*,1*"
 					  Grid.Row="2">
-					<Button Grid.Column="0"
+					<Grid Grid.Column="0"
+						  ColumnDefinitions="1*,5,1*"
+						  HorizontalAlignment="Left">
+						<Button Grid.Column="0"
 							HorizontalAlignment="Left"
 							Command="{Binding LoadSaveLocationsCommand}">
-						<ui:FontIcon Glyph="&#xE149;"
-										FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-					</Button>
-					<Button Grid.Column="1"
-							HorizontalAlignment="Left"
-							Command="{Binding LoadMissingSavesFromGitHubCommand}">
-						<ui:FontIcon Glyph="&#xE118;"
-										FontFamily="{StaticResource SymbolThemeFontFamily}"/>
-					</Button>
+							<ui:FontIcon Glyph="&#xE149;"
+											FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+						</Button>
+						<Button Grid.Column="2"
+								HorizontalAlignment="Left"
+								Command="{Binding LoadMissingSavesFromGitHubCommand}">
+							<ui:FontIcon Glyph="&#xE118;"
+											FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+						</Button>
+					</Grid>
 					<Button Content="Save Selected"
-							Grid.Column="2"
+							Grid.Column="1"
 							Command="{Binding CommitSelectedSavesCommand}"
 							Width="175"
 							HorizontalAlignment="Right"/>
