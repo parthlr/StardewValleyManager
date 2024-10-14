@@ -223,7 +223,7 @@ public partial class SavesViewModel : ViewModelBase
             SaveHistoryItemModel item = new SaveHistoryItemModel();
             item.SaveName = saveName;
             item.CommitSha = commitSHA.Substring(0, 7);
-            item.CommitDate = commitDateOffset.ToLocalTime().LocalDateTime.ToString();
+            item.CommitDate = commitDateOffset.ToLocalTime().LocalDateTime.ToString("MM/dd/yyyy hh:mm:ss tt");
 
             string saveGameInfo = await git.GetCommitContent($"{saveName}/SaveGameInfo", commitSHA);
 
