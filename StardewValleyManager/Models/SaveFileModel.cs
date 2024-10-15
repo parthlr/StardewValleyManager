@@ -52,6 +52,9 @@ public partial class SaveHistoryItemModel : ObservableObject
 {
     // General properties
     [ObservableProperty]
+    private bool _isLocalSave = false;
+
+    [ObservableProperty]
     private string _saveName = "";
 
     [ObservableProperty]

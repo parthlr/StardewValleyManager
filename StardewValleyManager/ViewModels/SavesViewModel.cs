@@ -215,42 +215,67 @@ public partial class SavesViewModel : ViewModelBase
 
         Save.SaveHistory.Clear();
 
+        SaveHistoryItemModel localSaveItem = await ParseSaveInfo(saveName, null, true);
+        Save.SaveHistory.Add(localSaveItem);
+
         foreach (GitHubCommit commit in commitHistory)
+        {
+            SaveHistoryItemModel item = await ParseSaveInfo(saveName, commit, false);
+
+            Save.SaveHistory.Add(item);
+        }
+
+        ActiveSave = Save;
+    }
+
+    private async Task<SaveHistoryItemModel> ParseSaveInfo(string saveName, GitHubCommit? commit, bool isLocal)
+    {
+        SaveHistoryItemModel item = new SaveHistoryItemModel();
+        item.IsLocalSave = isLocal;
+
+        if (isLocal)
+        {
+            string localSaveLocation = $"{saveLocation}/{saveName}";
+
+            FileInfo fi = new FileInfo(localSaveLocation);
+            item.CommitDate = fi.LastWriteTime.ToString("MM/dd/yyyy hh:mm:ss tt");
+            item.CommitSha = "Local Save";
+
+            saveService.LoadSaveGameInfoFile($"{localSaveLocation}/SaveGameInfo");
+        } else
         {
             string commitSHA = commit.Sha;
             DateTimeOffset commitDateOffset = commit.Commit.Author.Date;
 
-            SaveHistoryItemModel item = new SaveHistoryItemModel();
-            item.SaveName = saveName;
             item.CommitSha = commitSHA.Substring(0, 7);
             item.CommitDate = commitDateOffset.ToLocalTime().LocalDateTime.ToString("MM/dd/yyyy hh:mm:ss tt");
 
             string saveGameInfo = await git.GetCommitContent($"{saveName}/SaveGameInfo", commitSHA);
 
             saveService.LoadSaveGameInfoXML(saveGameInfo);
-
-            item.Year = saveService.GetYear();
-            item.Season = saveService.GetSeason();
-            item.Day = saveService.GetDay();
-            item.Money = saveService.GetPlayerMoney();
-            item.TotalMoneyEarned = saveService.GetTotalEarnedMoney();
-
-            ObservableCollection<PlayerRelationshipModel> playerRelationships = new ObservableCollection<PlayerRelationshipModel>(saveService.GetPlayerRelationships());
-            item.RelationshipStatus = playerRelationships;
-
-            item.FarmingLevel = saveService.GetPlayerFarmingLevel();
-            item.MiningLevel = saveService.GetPlayerMiningLevel();
-            item.CombatLevel = saveService.GetPlayerCombatLevel();
-            item.ForagingLevel = saveService.GetPlayerForagingLevel();
-            item.FishingLevel = saveService.GetPlayerFishingLevel();
-
-            ObservableCollection<InventoryItemModel> playerInventory = new ObservableCollection<InventoryItemModel>(saveService.GetPlayerInventory());
-            item.PlayerInventory = playerInventory;
-
-            Save.SaveHistory.Add(item);
         }
+        
+        item.SaveName = saveName;
 
-        ActiveSave = Save;
+        item.Year = saveService.GetYear();
+        item.Season = saveService.GetSeason();
+        item.Day = saveService.GetDay();
+        item.Money = saveService.GetPlayerMoney();
+        item.TotalMoneyEarned = saveService.GetTotalEarnedMoney();
+
+        ObservableCollection<PlayerRelationshipModel> playerRelationships = new ObservableCollection<PlayerRelationshipModel>(saveService.GetPlayerRelationships());
+        item.RelationshipStatus = playerRelationships;
+
+        item.FarmingLevel = saveService.GetPlayerFarmingLevel();
+        item.MiningLevel = saveService.GetPlayerMiningLevel();
+        item.CombatLevel = saveService.GetPlayerCombatLevel();
+        item.ForagingLevel = saveService.GetPlayerForagingLevel();
+        item.FishingLevel = saveService.GetPlayerFishingLevel();
+
+        ObservableCollection<InventoryItemModel> playerInventory = new ObservableCollection<InventoryItemModel>(saveService.GetPlayerInventory());
+        item.PlayerInventory = playerInventory;
+
+        return item;
     }
 
     [RelayCommand(CanExecute = nameof(CanCommitSave))]

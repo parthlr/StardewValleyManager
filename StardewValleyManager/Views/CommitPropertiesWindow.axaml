@@ -13,7 +13,8 @@
 		<ui:CommandBar Grid.Row="0"
 					   DefaultLabelPosition="Right">
 			<ui:CommandBar.PrimaryCommands>
-				<ui:CommandBarButton Height="40"
+				<ui:CommandBarButton IsEnabled="{Binding !SaveProperties.IsLocalSave}"
+									 Height="40"
 									 HorizontalAlignment="Center"
 									 HorizontalContentAlignment="Center"
 									 IconSource="Open"
@@ -21,7 +22,8 @@
 									 ToolTip.Tip="Open in GitHub"
 									 ToolTip.VerticalOffset="10"
 									 Command="{Binding OpenCommitPageCommand}"/>
-				<ui:CommandBarButton Height="40"
+				<ui:CommandBarButton IsEnabled="{Binding !SaveProperties.IsLocalSave}"
+									 Height="40"
 									 HorizontalAlignment="Center"
 									 HorizontalContentAlignment="Center"
 									 IconSource="Download"
