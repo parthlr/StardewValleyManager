@@ -28,11 +28,13 @@ public partial class SavesViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CommitSelectedSavesCommand))]
     [NotifyCanExecuteChangedFor(nameof(CommitSaveCommand))]
-    [NotifyCanExecuteChangedFor(nameof(LoadSaveFromCommitCommand))]
     private bool _saving = false;
 
     [ObservableProperty]
     private SaveInfoModel? _activeSave = new SaveInfoModel();
+
+    [ObservableProperty]
+    private bool _showGitError = false;
 
     private GitService git;
 
@@ -211,21 +213,44 @@ public partial class SavesViewModel : ViewModelBase
 
         System.Diagnostics.Debug.WriteLine($"Loading save history for {saveName}");
 
-        IReadOnlyList<GitHubCommit> commitHistory = await git.GetCommitHistory(saveName);
-
-        Save.SaveHistory.Clear();
-
-        SaveHistoryItemModel localSaveItem = await ParseSaveInfo(saveName, null, true);
-        Save.SaveHistory.Add(localSaveItem);
-
-        foreach (GitHubCommit commit in commitHistory)
+        try
         {
-            SaveHistoryItemModel item = await ParseSaveInfo(saveName, commit, false);
+            IReadOnlyList<GitHubCommit> commitHistory = await git.GetCommitHistory(saveName);
 
-            Save.SaveHistory.Add(item);
+            Save.SaveHistory.Clear();
+
+            SaveHistoryItemModel localSaveItem = await ParseSaveInfo(saveName, null, true);
+            Save.SaveHistory.Add(localSaveItem);
+
+            foreach (GitHubCommit commit in commitHistory)
+            {
+                SaveHistoryItemModel item = await ParseSaveInfo(saveName, commit, false);
+
+                Save.SaveHistory.Add(item);
+            }
         }
+        catch (ArgumentException e)
+        {
+            ShowGitError = true;
 
-        ActiveSave = Save;
+            Save.SaveHistory.Clear();
+
+            SaveHistoryItemModel localSaveItem = await ParseSaveInfo(saveName, null, true);
+            Save.SaveHistory.Add(localSaveItem);
+        }
+        catch (RateLimitExceededException e)
+        {
+            ShowGitError = true;
+
+            Save.SaveHistory.Clear();
+
+            SaveHistoryItemModel localSaveItem = await ParseSaveInfo(saveName, null, true);
+            Save.SaveHistory.Add(localSaveItem);
+        }
+        finally
+        {
+            ActiveSave = Save;
+        }
     }
 
     private async Task<SaveHistoryItemModel> ParseSaveInfo(string saveName, GitHubCommit? commit, bool isLocal)
@@ -283,10 +308,20 @@ public partial class SavesViewModel : ViewModelBase
     {
         Saving = true;
 
-        IEnumerable<string> selectedSaves = Saves.Where(save => save.IsSelected).Select(save => save.Name);
-        await git.CommitAllSaves(selectedSaves.ToArray());
-
-        Saving = false;
+        try
+        {
+            IEnumerable<string> selectedSaves = Saves.Where(save => save.IsSelected).Select(save => save.Name);
+            await git.CommitAllSaves(selectedSaves.ToArray());
+        } catch (ArgumentException e)
+        {
+            ShowGitError = true;
+        } catch (NotFoundException e)
+        {
+            ShowGitError = true;
+        } finally
+        {
+            Saving = false;
+        }
     }
 
     [RelayCommand(CanExecute = nameof(CanCommitSave))]
@@ -294,9 +329,22 @@ public partial class SavesViewModel : ViewModelBase
     {
         Saving = true;
 
-        await git.CommitSaveFolder(SaveName);
-
-        Saving = false;
+        try
+        {
+            await git.CommitSaveFolder(SaveName);
+        }
+        catch (ArgumentException e)
+        {
+            ShowGitError = true;
+        }
+        catch (NotFoundException e)
+        {
+            ShowGitError = true;
+        }
+        finally
+        {
+            Saving = false;
+        }
     }
 
     [RelayCommand]
@@ -306,31 +354,5 @@ public partial class SavesViewModel : ViewModelBase
     }
 
     private bool CanCommitSave() => !Saving;
-
-    [RelayCommand(CanExecute = nameof(CanCommitSave))]
-    private async Task LoadSaveFromCommit(string SaveName)
-    {
-        Saving = true;
-
-        System.Diagnostics.Debug.WriteLine($"Getting content from commit for save file {SaveName}");
-
-        Commit latestCommit = await git.GetLatestCommit();
-
-        string commitContent = await git.GetCommitContent($"{SaveName}/{SaveName}", latestCommit.Sha);
-
-        Directory.CreateDirectory($"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/StardewValley/Save_Backups");
-
-        string outputFilePath = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}/StardewValley/Save_Backups/{SaveName}";
-
-        if (!string.IsNullOrEmpty(commitContent))
-        {
-            System.Diagnostics.Debug.WriteLine("Writing to file");
-            File.WriteAllText(outputFilePath, commitContent);
-        }
-
-        System.Diagnostics.Debug.WriteLine($"Finished saving local copy for {SaveName}");
-
-        Saving = false;
-    }
 
 }
