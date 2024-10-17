@@ -28,7 +28,7 @@ public partial class SavesViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CommitSelectedSavesCommand))]
     [NotifyCanExecuteChangedFor(nameof(CommitSaveCommand))]
-    private bool _saving = false;
+    private bool _savingOrLoading = false;
 
     [ObservableProperty]
     private SaveInfoModel? _activeSave = new SaveInfoModel();
@@ -106,6 +106,8 @@ public partial class SavesViewModel : ViewModelBase
     [RelayCommand]
     private async Task LoadMissingSavesFromGitHub()
     {
+        SavingOrLoading = true;
+
         IReadOnlyDictionary<string, IReadOnlyList<RepositoryContent>> savesInGitHub = await git.GetSavesFromRepository();
 
         List<string> savesToDownload = new List<string>();
@@ -143,6 +145,8 @@ public partial class SavesViewModel : ViewModelBase
         }
 
         LoadSaveLocations();
+
+        SavingOrLoading = false;
     }
 
     private async Task<bool> DownloadFromURL(string url, string location)
@@ -209,6 +213,8 @@ public partial class SavesViewModel : ViewModelBase
     [RelayCommand]
     private async Task LoadSaveHistory(SaveInfoModel Save)
     {
+        SavingOrLoading = true;
+
         string saveName = Save.Name;
 
         System.Diagnostics.Debug.WriteLine($"Loading save history for {saveName}");
@@ -250,6 +256,7 @@ public partial class SavesViewModel : ViewModelBase
         finally
         {
             ActiveSave = Save;
+            SavingOrLoading = false;
         }
     }
 
@@ -306,7 +313,7 @@ public partial class SavesViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanCommitSave))]
     private async Task CommitSelectedSaves()
     {
-        Saving = true;
+        SavingOrLoading = true;
 
         try
         {
@@ -320,14 +327,14 @@ public partial class SavesViewModel : ViewModelBase
             ShowGitError = true;
         } finally
         {
-            Saving = false;
+            SavingOrLoading = false;
         }
     }
 
     [RelayCommand(CanExecute = nameof(CanCommitSave))]
     private async Task CommitSave(string SaveName)
     {
-        Saving = true;
+        SavingOrLoading = true;
 
         try
         {
@@ -343,7 +350,7 @@ public partial class SavesViewModel : ViewModelBase
         }
         finally
         {
-            Saving = false;
+            SavingOrLoading = false;
         }
     }
 
@@ -353,6 +360,6 @@ public partial class SavesViewModel : ViewModelBase
         commitPropertiesWindowFactory.CreateWindow(saveProperties);
     }
 
-    private bool CanCommitSave() => !Saving;
+    private bool CanCommitSave() => !SavingOrLoading;
 
 }
