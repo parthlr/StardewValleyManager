@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -18,6 +19,18 @@ public partial class CommitPropertiesViewModel : ViewModelBase
     [ObservableProperty]
     private SaveHistoryItemModel _saveProperties;
 
+    [ObservableProperty]
+    private bool _showGitError = false;
+
+    [ObservableProperty]
+    private bool _showLoadSuccess = false;
+
+    [ObservableProperty]
+    private string _loadSuccessMessage;
+
+    [ObservableProperty]
+    private bool _showLoadProgressBar = false;
+
     private GitService gitService;
 
     private SettingsService settingsService;
@@ -31,9 +44,11 @@ public partial class CommitPropertiesViewModel : ViewModelBase
     public void InitializeProperties(object properties)
     {
         SaveProperties = (SaveHistoryItemModel) properties;
+
+        LoadSuccessMessage = $"Save on {SaveProperties.CommitDate} loaded successfully.";
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanOpenOrLoadSave))]
     private void OpenCommitPage()
     {
         string user = settingsService.GetSettingsValue("username");
@@ -44,11 +59,26 @@ public partial class CommitPropertiesViewModel : ViewModelBase
         Process.Start(new ProcessStartInfo(commitURL) { UseShellExecute = true });
     }
 
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanOpenOrLoadSave))]
     private async Task BackupAndLoadCommit()
     {
         // TODO: Add confirmation dialog before call
-        await LoadCommit();
+        try
+        {
+            ShowLoadProgressBar = true;
+
+            await LoadCommit();
+
+            ShowLoadProgressBar = false;
+            ShowGitError = false;
+            ShowLoadSuccess = true;
+        }
+        catch (NotFoundException e)
+        {
+            ShowLoadProgressBar = false;
+            ShowLoadSuccess = false;
+            ShowGitError = true;
+        }
     }
 
     private async Task LoadCommit()
@@ -66,13 +96,14 @@ public partial class CommitPropertiesViewModel : ViewModelBase
 
         // Load commit
         IReadOnlyList<RepositoryContent> downloadContent = await gitService.GetCommitFiles(saveFolder, commit);
-        Directory.CreateDirectory($"{saveLocation}/Backup/{saveFolder}");
+        Directory.CreateDirectory($"{saveLocation}/{saveFolder}");
 
         foreach (RepositoryContent file in downloadContent)
         {
             // Download each file to the save
-            bool downloadResult = await DownloadFromURL(file.DownloadUrl, $"{saveLocation}/Backup/{saveFolder}/{file.Name}");
+            bool downloadResult = await DownloadFromURL(file.DownloadUrl, $"{saveLocation}/{saveFolder}/{file.Name}");
         }
+        
     }
 
     private async Task<bool> DownloadFromURL(string url, string location)
@@ -112,4 +143,6 @@ public partial class CommitPropertiesViewModel : ViewModelBase
 
         return true;
     }
+
+    private bool CanOpenOrLoadSave() => !SaveProperties.IsLocalSave;
 }

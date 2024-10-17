@@ -9,12 +9,11 @@
         x:Class="StardewValleyManager.Views.CommitPropertiesWindow"
 		x:DataType="vm:CommitPropertiesViewModel"
         Title="View Save" Width="600" Height="400">
-	<Grid RowDefinitions="Auto,*">
+	<Grid RowDefinitions="Auto,*,Auto">
 		<ui:CommandBar Grid.Row="0"
 					   DefaultLabelPosition="Right">
 			<ui:CommandBar.PrimaryCommands>
-				<ui:CommandBarButton IsEnabled="{Binding !SaveProperties.IsLocalSave}"
-									 Height="40"
+				<ui:CommandBarButton Height="40"
 									 HorizontalAlignment="Center"
 									 HorizontalContentAlignment="Center"
 									 IconSource="Open"
@@ -22,8 +21,7 @@
 									 ToolTip.Tip="Open in GitHub"
 									 ToolTip.VerticalOffset="10"
 									 Command="{Binding OpenCommitPageCommand}"/>
-				<ui:CommandBarButton IsEnabled="{Binding !SaveProperties.IsLocalSave}"
-									 Height="40"
+				<ui:CommandBarButton Height="40"
 									 HorizontalAlignment="Center"
 									 HorizontalContentAlignment="Center"
 									 IconSource="Download"
@@ -211,5 +209,26 @@
 				</Grid>
 			</ui:TabViewItem>
 		</ui:TabView>
+		<ui:InfoBar Grid.Row="2"
+					VerticalAlignment="Bottom"
+					HorizontalAlignment="Stretch"
+					Margin="10"
+					Title="GitHub Authentication Error"
+					IsOpen="{Binding ShowGitError, Mode=TwoWay}"
+					Severity="Error"
+					Message="There was an error accessing your GitHub account. Please go to Settings > GitHub > Account Setup > Setup Account to fix your account issues." />
+		<ui:InfoBar Grid.Row="2"
+					VerticalAlignment="Bottom"
+					HorizontalAlignment="Stretch"
+					Margin="10"
+					Title="Load Success"
+					IsOpen="{Binding ShowLoadSuccess, Mode=TwoWay}"
+					Severity="Success"
+					Message="{Binding LoadSuccessMessage}" />
+		<ProgressBar Grid.Row="2"
+					 HorizontalAlignment="Stretch"
+					 Orientation="Horizontal"
+					 IsIndeterminate="True"
+					 IsVisible="{Binding ShowLoadProgressBar}"/>
 	</Grid>
 </Window>
