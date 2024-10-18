@@ -17,6 +17,8 @@ public class GameSaveFileService
 
     private string[] farmTypes = { "Standard Farm","Riverland Farm", "Forest Farm", "Hilltop Farm", "Wilderness Farm", "Four Corners Farm", "Beach Farm", "Meadowlands Farm" };
 
+    private string[] farmTypeImages = { "Standard_Farm_Map_Icon.png", "Riverland_Farm_Map_Icon.png", "Forest_Farm_Map_Icon.png", "Hilltop_Farm_Map_Icon.png", "Wilderness_Farm_Map_Icon.png", "Four_Corners_Farm_Map_Icon.png", "Beach_Farm_Map_Icon.png", "Meadowlands_Farm_Map_Icon.png" };
+
     private string[] seasons = { "Spring", "Summer", "Fall", "Winter" };
 
     private string[] itemQualities = { "Normal", "Silver", "Gold", "", "Iridium" };
@@ -61,6 +63,44 @@ public class GameSaveFileService
         }
         int farmIndex = Convert.ToInt32(farmType.InnerText);
         return farmTypes[farmIndex];
+    }
+
+    public string GetFarmTypeIconPath()
+    {
+        XmlNode? farmType = saveFileDoc.SelectSingleNode("SaveGame/whichFarm");
+        if (farmType == null)
+        {
+            return null;
+        }
+        int farmIndex = Convert.ToInt32(farmType.InnerText);
+        return $"avares://StardewValleyManager/Assets/FarmTypes/{farmTypeImages[farmIndex]}";
+    }
+
+    public string GetPetIconPath()
+    {
+        XmlNode? petTypeNode = saveGameInfoDoc.SelectSingleNode("Farmer/whichPetType");
+        if (petTypeNode == null)
+        {
+            return null;
+        }
+
+        XmlNode? petBreedNode = saveGameInfoDoc.SelectSingleNode("Farmer/whichPetBreed");
+        if (petBreedNode == null)
+        {
+            return null;
+        }
+
+        string petType = "dog";
+        if (petTypeNode.InnerText.Equals("Cat"))
+        {
+            petType = "cat";
+        }
+
+        string petBreed = petBreedNode.InnerText;
+
+        string petIconPath = $"avares://StardewValleyManager/Assets/Pets/{petType}{petBreed}.png";
+
+        return petIconPath;
     }
 
     public int GetPlayerMoney()

@@ -97,6 +97,8 @@ public partial class SavesViewModel : ViewModelBase
 
             info.PlayerName = saveService.GetPlayerName();
             info.FarmType = saveService.GetFarmType();
+            info.FarmTypeIconPath = saveService.GetFarmTypeIconPath();
+            info.PetIconPath = saveService.GetPetIconPath();
 
             Saves.Add(info);
         }

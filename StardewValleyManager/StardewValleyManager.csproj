@@ -33,4 +33,10 @@
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\GitAuthenticationWindow.axaml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Assets\FarmTypes\" />
+    <Folder Include="Assets\Misc\" />
+    <Folder Include="Assets\Pets\" />
+  </ItemGroup>
 </Project>

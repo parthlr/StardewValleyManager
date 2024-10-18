@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:StardewValleyManager.ViewModels"
+			 xmlns:ext="clr-namespace:StardewValleyManager.Converters;assembly=StardewValleyManager"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 			 xmlns:ui="using:FluentAvalonia.UI.Controls"
              x:Class="StardewValleyManager.Views.SavesView"
@@ -15,6 +16,7 @@
 	</Design.DataContext>
 	<UserControl.Resources>
 		<ui:SymbolIconSource x:Key="GoIcon" Symbol="ChevronRight" />
+		<ext:BitmapAssetConverter x:Key="ImageConverter"/>
 	</UserControl.Resources>
 
 	<Grid ColumnDefinitions="1*,2*">
@@ -86,37 +88,46 @@
 			</Grid>
 		</Border>
 
-		<Grid RowDefinitions="Auto,Auto,Auto,Auto,*"
+		<Grid RowDefinitions="Auto,Auto,Auto,*"
 			  Grid.Column="1"
 			  IsVisible="{Binding ActiveSave.IsEnabled}">
-			<Grid Grid.Row="0" ColumnDefinitions="3*,Auto">
-				<TextBlock Text="{Binding ActiveSave.FarmName}"
-						   Margin="12"
-						   FontSize="40"
-						   FontWeight="SemiBold"
-						   Grid.Column="0"/>
+			<Grid Grid.Row="0"
+				  ColumnDefinitions="*,*">
+				<Grid Grid.Column="0"
+					  ColumnDefinitions="Auto,*">
+					<TextBlock Grid.Column="0"
+							   Text="{Binding ActiveSave.FarmName}"
+							   Margin="12"
+							   FontSize="40"
+							   FontWeight="SemiBold"
+							   HorizontalAlignment="Left"
+							   VerticalAlignment="Center"/>
+					<Image Grid.Column="1"
+						   Source="{Binding ActiveSave.FarmTypeIconPath, Converter={StaticResource ImageConverter}}"
+						   Margin="12 5 0 5"
+						   Width="45"
+						   Height="50"
+						   HorizontalAlignment="Left"
+						   VerticalAlignment="Center"/>
+				</Grid>
 				<Button Content="Create Save"
 						Grid.Column="1"
 						Width="175"
 						Margin="0 0 12 0"
 						Command="{Binding CommitSaveCommand}"
-						CommandParameter="{Binding ActiveSave.Name}"/>
+						CommandParameter="{Binding ActiveSave.Name}"
+						HorizontalAlignment="Right"/>
 			</Grid>
 			<TextBlock Grid.Row="1"
 					   Text="{Binding ActiveSave.PlayerName}"
-					   Margin="12 0 0 0"
-					   FontSize="14"
+					   Margin="12 0 0 5"
+					   FontSize="16"
 					   FontWeight="SemiBold"/>
-			<TextBlock Grid.Row="2"
-					   Text="{Binding ActiveSave.FarmType}"
-					   Margin="12 0 0 0"
-					   FontSize="14"
-					   FontWeight="SemiBold"/>
-			<Border Grid.Row="3"
+			<Border Grid.Row="2"
 					Background="{DynamicResource DividerStrokeColorDefaultBrush}"
 					Height="1"
 					Margin="6" />
-			<DataGrid Grid.Row="4"
+			<DataGrid Grid.Row="3"
 					  Margin="20"
 					  ItemsSource="{Binding ActiveSave.SaveHistory}"
 					  ColumnWidth="*"

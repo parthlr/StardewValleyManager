@@ -27,6 +27,12 @@ public partial class SaveInfoModel : ObservableObject
     private string _farmType = "";
 
     [ObservableProperty]
+    private string _farmTypeIconPath = null;
+
+    [ObservableProperty]
+    private string _petIconPath = null;
+
+    [ObservableProperty]
     private ObservableCollection<SaveHistoryItemModel> _saveHistory = [];
 
     public string? Name { get; set; }

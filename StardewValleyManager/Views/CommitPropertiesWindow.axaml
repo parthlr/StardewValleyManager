@@ -38,7 +38,7 @@
 					VerticalAlignment="Stretch"
 					Margin="10">
 			<ui:TabViewItem Header="Properties     "
-							IconSource="Settings"
+							IconSource="avares://StardewValleyManager/Assets/Misc/house_icon.png"
 							IsClosable="False">
 				<ScrollViewer VerticalScrollBarVisibility="Visible"
 							  Margin="10">
@@ -85,7 +85,7 @@
 				</ScrollViewer>
 			</ui:TabViewItem>
 			<ui:TabViewItem Header="Inventory      "
-							IconSource="Document"
+							IconSource="avares://StardewValleyManager/Assets/Misc/inventory_icon.png"
 							IsClosable="False">
 				<Grid RowDefinitions="Auto,*"
 					  Margin="10">
@@ -126,7 +126,7 @@
 				</Grid>
 			</ui:TabViewItem>
 			<ui:TabViewItem Header="Skills         "
-							IconSource="Document"
+							IconSource="avares://StardewValleyManager/Assets/Misc/skills_icon.png"
 							IsClosable="False">
 				<ScrollViewer VerticalScrollBarVisibility="Visible"
 							  Margin="10">
@@ -173,7 +173,7 @@
 				</ScrollViewer>
 			</ui:TabViewItem>
 			<ui:TabViewItem Header="Relationships  "
-							IconSource="Document"
+							IconSource="avares://StardewValleyManager/Assets/Misc/heart_icon.png"
 							IsClosable="False">
 				<Grid RowDefinitions="Auto,*"
 					  Margin="10">
