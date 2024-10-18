@@ -50,6 +50,7 @@
 											FontFamily="{StaticResource SymbolThemeFontFamily}"/>
 						</Button>
 						<Button Grid.Column="2"
+								IsVisible="False"
 								HorizontalAlignment="Left"
 								Command="{Binding LoadMissingSavesFromGitHubCommand}">
 							<ui:FontIcon Glyph="&#xE118;"
