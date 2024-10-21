@@ -8,28 +8,34 @@
         x:Class="StardewValleyManager.Views.GitAuthenticationWindow"
 		xmlns:ui="using:FluentAvalonia.UI.Controls"
 		x:DataType="vm:GitAuthenticationViewModel"
-        Title="Git Authentication" Height="500" Width="450">
-	<StackPanel Spacing="10"
-				Margin="12">
-		<TextBlock Text="1. Create a GitHub Account"
+        Title="Git Authentication" Height="550" Width="450">
+	<Grid RowDefinitions="Auto,10,Auto,10,Auto,10,Auto,10,Auto,10,Auto,10,Auto,10,Auto,10,Auto,*"
+		  Margin="12">
+		<TextBlock Grid.Row="0"
+				   Text="1. Create a GitHub Account"
 					FontSize="20"
 					FontWeight="SemiBold"/>
-		<TextBlock Text="If you don't already have one, create a GitHub account. This is the account where your saves will be stored."
+		<TextBlock Grid.Row="2"
+				   Text="If you don't already have one, create a GitHub account. This is the account where your saves will be stored."
 					FontSize="14"
 					Foreground="{DynamicResource TextFillColorSecondaryBrush}"
 					TextWrapping="Wrap"/>
-		<HyperlinkButton Content="https://github.com/signup"
+		<HyperlinkButton Grid.Row="4"
+						 Content="https://github.com/signup"
 							FontSize="14"
 							Command="{Binding OpenWebpageCommand}"
 							CommandParameter="https://github.com/signup"/>
-		<TextBlock Text="2. Generate a User Code"
+		<TextBlock Grid.Row="6"
+				   Text="2. Generate a User Code"
 					FontSize="20"
 					FontWeight="SemiBold"/>
-		<TextBlock Text="Generate a user code below. This code will be used to authenticate your account."
+		<TextBlock Grid.Row="8"
+				   Text="Generate a user code below. This code will be used to authenticate your account."
 					FontSize="14"
 					Foreground="{DynamicResource TextFillColorSecondaryBrush}"
 					TextWrapping="Wrap"/>
-		<Grid ColumnDefinitions="Auto,3*">
+		<Grid Grid.Row="10"
+			  ColumnDefinitions="Auto,3*">
 			<Button Grid.Column="0"
 					Content="Generate"
 					Margin="0 0 12 0"
@@ -39,22 +45,41 @@
 						HorizontalAlignment="Stretch"
 						IsReadOnly="True"/>
 		</Grid>
-		<TextBlock Text="3. Authenticate with your User Code"
+		<TextBlock Grid.Row="12"
+				   Text="3. Authenticate with your User Code"
 					FontSize="20"
 					FontWeight="SemiBold"/>
-		<TextBlock Text="Log into your GitHub account using the link below. When prompted, input the code you just generated to allow the client to create a repository and save backups to that repository on your behalf."
+		<TextBlock Grid.Row="14"
+				   Text="Log into your GitHub account using the link below. When prompted, input the code you just generated to allow the client to create a repository and save backups to that repository on your behalf."
 					FontSize="14"
 					Foreground="{DynamicResource TextFillColorSecondaryBrush}"
 					TextWrapping="Wrap"/>
-		<HyperlinkButton Content="https://github.com/login/device"
+		<HyperlinkButton Grid.Row="16"
+						 Content="https://github.com/login/device"
 							FontSize="14"
 							Command="{Binding OpenWebpageCommand}"
 							CommandParameter="https://github.com/login/device"/>
-		<Grid ColumnDefinitions="Auto,Auto">
-			<TextBlock Grid.Column="0"
-						Text="Authenticated:  "/>
-			<TextBlock Grid.Column="1"
-						Text="{Binding IsAuthenticated}"/>
-		</Grid>
-	</StackPanel>
+		<ui:InfoBar Grid.Row="17"
+					VerticalAlignment="Bottom"
+					HorizontalAlignment="Stretch"
+					Margin="10"
+					Title="Authentication Success"
+					IsOpen="{Binding IsAuthenticated, Mode=TwoWay}"
+					Severity="Success"
+					Message="Successfully authenticated your GitHub account. You can close this window." />
+		<ui:InfoBar Grid.Row="17"
+					VerticalAlignment="Bottom"
+					HorizontalAlignment="Stretch"
+					Margin="10"
+					Title="Authentication Error"
+					IsOpen="{Binding ShowAuthenticationError, Mode=TwoWay}"
+					Severity="Error"
+					Message="There was an error authenticating your account. Please try again." />
+		<ProgressBar Grid.Row="17"
+					 VerticalAlignment="Bottom"
+					 HorizontalAlignment="Stretch"
+					 Orientation="Horizontal"
+					 IsIndeterminate="True"
+					 IsVisible="{Binding ShowAuthenticationProgressBar}"/>
+	</Grid>
 </Window>

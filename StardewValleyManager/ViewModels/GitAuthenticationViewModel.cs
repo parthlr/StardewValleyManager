@@ -19,6 +19,12 @@ public partial class GitAuthenticationViewModel : ViewModelBase
     [ObservableProperty]
     private bool _isAuthenticated = false;
 
+    [ObservableProperty]
+    private bool _showAuthenticationError = false;
+
+    [ObservableProperty]
+    private bool _showAuthenticationProgressBar = false;
+
     private GitService git;
 
     private SettingsService settingsService;
@@ -32,21 +38,34 @@ public partial class GitAuthenticationViewModel : ViewModelBase
     [RelayCommand]
     private async Task GenerateUserCodeAndWaitForAuthentication()
     {
-        OauthDeviceFlowResponse authResponse = await git.GenerateUserCode();
+        ShowAuthenticationProgressBar = true;
 
-        UserCode = authResponse.UserCode;
+        try
+        {
+            OauthDeviceFlowResponse authResponse = await git.GenerateUserCode();
 
-        string gitToken = await git.GetUserAuthToken(authResponse);
-        git.AuthToken = gitToken;
-        git.InitCredentials();
+            UserCode = authResponse.UserCode;
 
-        string username = await git.GetUserLogin();
-        git.User = username;
+            string gitToken = await git.GetUserAuthToken(authResponse);
+            git.AuthToken = gitToken;
+            git.InitCredentials();
 
-        settingsService.UpdateSettingsValue("gitToken", gitToken, true);
-        settingsService.UpdateSettingsValue("username", username, true);
+            string username = await git.GetUserLogin();
+            git.User = username;
 
-        IsAuthenticated = true;
+            settingsService.UpdateSettingsValue("gitToken", gitToken, true);
+            settingsService.UpdateSettingsValue("username", username, true);
+
+            IsAuthenticated = true;
+            ShowAuthenticationError = false;
+        } catch (Exception e)
+        {
+            IsAuthenticated = false;
+            ShowAuthenticationError = true;
+        } finally
+        {
+            ShowAuthenticationProgressBar = false;
+        }
     }
 
     [RelayCommand]
