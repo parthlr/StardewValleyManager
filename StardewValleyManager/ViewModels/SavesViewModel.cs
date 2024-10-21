@@ -265,7 +265,6 @@ public partial class SavesViewModel : ViewModelBase
     private async Task<SaveHistoryItemModel> ParseSaveInfo(string saveName, GitHubCommit? commit, bool isLocal)
     {
         SaveHistoryItemModel item = new SaveHistoryItemModel();
-        item.IsLocalSave = isLocal;
 
         if (isLocal)
         {
@@ -273,7 +272,8 @@ public partial class SavesViewModel : ViewModelBase
 
             FileInfo fi = new FileInfo(localSaveLocation);
             item.CommitDate = fi.LastWriteTime.ToString("MM/dd/yyyy hh:mm:ss tt");
-            item.CommitSha = "Local Save";
+            item.CommitSha = "";
+            item.SaveSource = "Local";
 
             saveService.LoadSaveGameInfoFile($"{localSaveLocation}/SaveGameInfo");
         } else
@@ -281,14 +281,16 @@ public partial class SavesViewModel : ViewModelBase
             string commitSHA = commit.Sha;
             DateTimeOffset commitDateOffset = commit.Commit.Author.Date;
 
-            item.CommitSha = commitSHA.Substring(0, 7);
+            item.CommitSha = commitSHA;
             item.CommitDate = commitDateOffset.ToLocalTime().LocalDateTime.ToString("MM/dd/yyyy hh:mm:ss tt");
+            item.SaveSource = "GitHub";
 
             string saveGameInfo = await git.GetCommitContent($"{saveName}/SaveGameInfo", commitSHA);
 
             saveService.LoadSaveGameInfoXML(saveGameInfo);
         }
         
+        item.GameVersion = saveService.GetGameVersion();
         item.SaveName = saveName;
 
         item.Year = saveService.GetYear();

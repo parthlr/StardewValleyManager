@@ -73,12 +73,12 @@
 												Grid.Column="0"
 												IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
 									<ui:SettingsExpander Header="{Binding FarmName}"
-															Description="{Binding Date}"
-															IsClickEnabled="True"
-															Command="{Binding $parent[ItemsControl].((vm:SavesViewModel)DataContext).LoadSaveHistoryCommand}"
-															CommandParameter="{Binding}"
-															ActionIconSource="{StaticResource GoIcon}"
-															Grid.Column="1">
+														 Description="{Binding Date}"
+														 IsClickEnabled="True"
+														 CommandParameter="{Binding}"
+														 ActionIconSource="{StaticResource GoIcon}"
+														 Grid.Column="1"
+														 Click="OpenSaveDetails">
 									</ui:SettingsExpander>
 								</Grid>
 							</DataTemplate>
@@ -128,13 +128,15 @@
 					Background="{DynamicResource DividerStrokeColorDefaultBrush}"
 					Height="1"
 					Margin="6" />
-			<DataGrid Grid.Row="3"
+			<DataGrid Name="SaveHistoryTable"
+					  Grid.Row="3"
 					  Margin="20"
 					  ItemsSource="{Binding ActiveSave.SaveHistory}"
 					  ColumnWidth="*"
 					  IsReadOnly="True">
 				<DataGrid.Columns>
-					<DataGridTextColumn Width="Auto" Header="Commit SHA" Binding="{Binding CommitSha}"/>
+					<DataGridTextColumn IsVisible="False" Width="Auto" Header="Source" Binding="{Binding SaveSource}"/>
+					<DataGridTextColumn Width="Auto" Header="Game Version" Binding="{Binding GameVersion}"/>
 					<DataGridTextColumn Width="Auto" Header="Date Saved" Binding="{Binding CommitDate}"/>
 					<DataGridTextColumn Header="Year" Binding="{Binding Year}"/>
 					<DataGridTextColumn Header="Season" Binding="{Binding Season}"/>

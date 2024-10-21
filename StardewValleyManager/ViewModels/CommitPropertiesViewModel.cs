@@ -144,5 +144,5 @@ public partial class CommitPropertiesViewModel : ViewModelBase
         return true;
     }
 
-    private bool CanOpenOrLoadSave() => !SaveProperties.IsLocalSave;
+    private bool CanOpenOrLoadSave() => !SaveProperties.SaveSource.Equals("Local");
 }

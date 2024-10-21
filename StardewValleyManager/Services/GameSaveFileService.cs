@@ -44,6 +44,16 @@ public class GameSaveFileService
         saveGameInfoDoc.Load(SavePath);
     }
 
+    public string GetGameVersion()
+    {
+        XmlNode? gameVersionNode = saveGameInfoDoc.SelectSingleNode("Farmer/gameVersion");
+        if (gameVersionNode == null)
+        {
+            return "Unknown";
+        }
+        return gameVersionNode.InnerText;
+    }
+
     public string GetPlayerName()
     {
         XmlNode? farmerName = saveGameInfoDoc.SelectSingleNode("Farmer/name");
