@@ -6,8 +6,8 @@
         xmlns:views="clr-namespace:StardewValleyManager.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="StardewValleyManager.Views.MainWindow"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="StardewValleyManager">
+        Icon="/Assets/blue_chicken_logo.png"
+        Title="Stardew Valley Manager">
 
 	<views:MainView/>
 	

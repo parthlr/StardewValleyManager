@@ -8,6 +8,7 @@
         x:Class="StardewValleyManager.Views.GitAuthenticationWindow"
 		xmlns:ui="using:FluentAvalonia.UI.Controls"
 		x:DataType="vm:GitAuthenticationViewModel"
+		Icon="/Assets/blue_chicken_logo.png"
         Title="Git Authentication" Height="550" Width="450">
 	<Grid RowDefinitions="Auto,10,Auto,10,Auto,10,Auto,10,Auto,10,Auto,10,Auto,10,Auto,10,Auto,*"
 		  Margin="12">
