@@ -58,6 +58,9 @@ public partial class GitAuthenticationViewModel : ViewModelBase
 
             IsAuthenticated = true;
             ShowAuthenticationError = false;
+
+            string repositoryName = settingsService.GetSettingsValue("repository");
+            await git.CheckAndCreateRepository(repositoryName);
         } catch (Exception e)
         {
             IsAuthenticated = false;

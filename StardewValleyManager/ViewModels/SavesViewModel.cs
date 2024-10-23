@@ -34,6 +34,12 @@ public partial class SavesViewModel : ViewModelBase
     private SaveInfoModel? _activeSave = new SaveInfoModel();
 
     [ObservableProperty]
+    private string _gitErrorTitle = "";
+
+    [ObservableProperty]
+    private string _gitErrorMessage = "";
+
+    [ObservableProperty]
     private bool _showGitError = false;
 
     private GitService git;
@@ -239,6 +245,19 @@ public partial class SavesViewModel : ViewModelBase
         }
         catch (ArgumentException e)
         {
+            GitErrorTitle = "GitHub Authentication Error";
+            GitErrorMessage = "There was an error accessing your GitHub account. Please go to Settings > GitHub > Account Setup > Setup Account to fix the authentication error.";
+            ShowGitError = true;
+
+            Save.SaveHistory.Clear();
+
+            SaveHistoryItemModel localSaveItem = await ParseSaveInfo(saveName, null, true);
+            Save.SaveHistory.Add(localSaveItem);
+        }
+        catch (NotFoundException e)
+        {
+            GitErrorTitle = "Save History Load Error";
+            GitErrorMessage = "There was an error loading your save history. Please ensure that your GitHub repository is configured properly in Settings > GitHub > Account Setup > Repository Name.";
             ShowGitError = true;
 
             Save.SaveHistory.Clear();
@@ -248,6 +267,8 @@ public partial class SavesViewModel : ViewModelBase
         }
         catch (RateLimitExceededException e)
         {
+            GitErrorTitle = "GitHub Authentication Error";
+            GitErrorMessage = "There was an error accessing your GitHub account. Please go to Settings > GitHub > Account Setup > Setup Account to fix the authentication error.";
             ShowGitError = true;
 
             Save.SaveHistory.Clear();
@@ -323,6 +344,8 @@ public partial class SavesViewModel : ViewModelBase
         {
             IEnumerable<string> selectedSaves = Saves.Where(save => save.IsSelected).Select(save => save.Name);
             await git.CommitAllSaves(selectedSaves.ToArray());
+
+            await LoadSaveHistory(ActiveSave);
         } catch (ArgumentException e)
         {
             ShowGitError = true;
@@ -343,6 +366,8 @@ public partial class SavesViewModel : ViewModelBase
         try
         {
             await git.CommitSaveFolder(SaveName);
+
+            await LoadSaveHistory(ActiveSave);
         }
         catch (ArgumentException e)
         {

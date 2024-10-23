@@ -158,10 +158,10 @@
 					VerticalAlignment="Bottom"
 					HorizontalAlignment="Stretch"
 					Margin="10"
-					Title="GitHub Authentication Error"
+					Title="{Binding GitErrorTitle}"
 					IsOpen="{Binding ShowGitError, Mode=TwoWay}"
 					Severity="Error"
-					Message="There was an error accessing your GitHub account. Please go to Settings > GitHub > Account Setup > Setup Account to fix your account issues." />
+					Message="{Binding GitErrorMessage}" />
 		<ProgressBar Grid.ColumnSpan="2"
 					 HorizontalAlignment="Stretch"
 					 VerticalAlignment="Bottom"
