@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -95,6 +96,12 @@ public partial class SettingsViewModel : ViewModelBase
     partial void OnRepositoryNameChanged(string value)
     {
         settingsService.UpdateSettingsValue("repository", RepositoryName, true);
+    }
+
+    [RelayCommand]
+    private void OpenWebpage(string url)
+    {
+        Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
     }
 
 }
