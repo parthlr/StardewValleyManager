@@ -9,7 +9,8 @@
 		xmlns:ui="using:FluentAvalonia.UI.Controls"
 		x:DataType="vm:GitAuthenticationViewModel"
 		Icon="/Assets/blue_chicken_logo.png"
-        Title="Git Authentication" Height="550" Width="450">
+        Title="Git Authentication" Height="550" Width="450"
+		WindowStartupLocation="CenterScreen">
 	<Grid RowDefinitions="Auto,10,Auto,10,Auto,10,Auto,10,Auto,10,Auto,10,Auto,10,Auto,10,Auto,*"
 		  Margin="12">
 		<TextBlock Grid.Row="0"

@@ -9,7 +9,8 @@
         x:Class="StardewValleyManager.Views.CommitPropertiesWindow"
 		x:DataType="vm:CommitPropertiesViewModel"
         Title="View Save" Width="600" Height="400"
-		Icon="/Assets/blue_chicken_logo.png">
+		Icon="/Assets/blue_chicken_logo.png"
+		WindowStartupLocation="CenterScreen">
 	<Grid RowDefinitions="Auto,*,Auto">
 		<ui:CommandBar Grid.Row="0"
 					   DefaultLabelPosition="Right">
