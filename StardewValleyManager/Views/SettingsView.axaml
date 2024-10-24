@@ -43,9 +43,20 @@
 										 Description="Never share this with anyone"
                                          ActionIconSource="Open">
 					<ui:SettingsExpanderItem.Footer>
-						<TextBox MinWidth="300"
+						<TextBox Width="400"
 								 Text="{Binding GitToken}"
-								 IsReadOnly="True"/>
+								 IsReadOnly="True"
+								 PasswordChar="●"
+								 RevealPassword="{Binding IsGitAuthTokenVisible}">
+							<TextBox.InnerRightContent>
+								<Button Theme="{StaticResource TransparentButton}"
+										Margin="0 0 3 0"
+										Command="{Binding ToggleGitAuthTokenVisibilityCommand}">
+									<ui:FontIcon Glyph="&#xF78D;"
+												 FontFamily="{StaticResource SymbolThemeFontFamily}"/>
+								</Button>
+							</TextBox.InnerRightContent>
+						</TextBox>
 					</ui:SettingsExpanderItem.Footer>
 				</ui:SettingsExpanderItem>
 				<ui:SettingsExpanderItem Content="Username"

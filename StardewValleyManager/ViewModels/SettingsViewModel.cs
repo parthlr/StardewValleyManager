@@ -34,6 +34,9 @@ public partial class SettingsViewModel : ViewModelBase
     [ObservableProperty]
     private string _repositoryName;
 
+    [ObservableProperty]
+    private bool _isGitAuthTokenVisible = false;
+
     private SettingsService settingsService;
 
     private IWindowFactory<GitAuthenticationWindow> gitAuthenticationWindowFactory;
@@ -65,6 +68,12 @@ public partial class SettingsViewModel : ViewModelBase
     public void SaveSettings()
     {
         settingsService.SaveSettings();
+    }
+
+    [RelayCommand]
+    public void ToggleGitAuthTokenVisibility()
+    {
+        IsGitAuthTokenVisible = !IsGitAuthTokenVisible;
     }
 
     private ThemeVariant GetThemeVariant(string theme)
