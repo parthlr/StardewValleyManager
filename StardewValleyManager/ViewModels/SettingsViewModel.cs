@@ -8,13 +8,14 @@ using Avalonia;
 using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using StardewValleyManager.Services;
 using StardewValleyManager.ViewModels.Factories;
 using StardewValleyManager.Views;
 
 namespace StardewValleyManager.ViewModels;
 
-public partial class SettingsViewModel : ViewModelBase
+public partial class SettingsViewModel : ViewModelBase, IRecipient<SettingsUpdateEvent>
 {
     [ObservableProperty]
     private string _appTheme;
@@ -43,6 +44,8 @@ public partial class SettingsViewModel : ViewModelBase
 
     public SettingsViewModel(SettingsService settingsService, IWindowFactory<GitAuthenticationWindow> gitAuthenticationWindowFactory)
     {
+        Messenger.RegisterAll(this);
+
         this.settingsService = settingsService;
         this.gitAuthenticationWindowFactory = gitAuthenticationWindowFactory;
 
@@ -113,4 +116,17 @@ public partial class SettingsViewModel : ViewModelBase
         Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
     }
 
+    public void Receive(SettingsUpdateEvent message) {
+        if (message.gitAuthToken != null)
+        {
+            GitToken = message.gitAuthToken;
+        }
+        if (message.gitUsername != null)
+        {
+            GitUsername = message.gitUsername;
+        }
+    }
+
 }
+
+public record class SettingsUpdateEvent(string? gitAuthToken, string? gitUsername);

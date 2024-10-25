@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Octokit;
 using StardewValleyManager.Services;
 
@@ -56,11 +57,13 @@ public partial class GitAuthenticationViewModel : ViewModelBase
             settingsService.UpdateSettingsValue("gitToken", gitToken, true);
             settingsService.UpdateSettingsValue("username", username, true);
 
-            IsAuthenticated = true;
-            ShowAuthenticationError = false;
+            Messenger.Send(new SettingsUpdateEvent(gitToken, username));
 
             string repositoryName = settingsService.GetSettingsValue("repository");
             await git.CheckAndCreateRepository(repositoryName);
+
+            IsAuthenticated = true;
+            ShowAuthenticationError = false;
         } catch (Exception e)
         {
             IsAuthenticated = false;
