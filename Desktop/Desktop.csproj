@@ -28,6 +28,7 @@
 
   <ItemGroup>
 	  <TrimmerRootAssembly Include="StardewValleyManager" />
+	  <TrimmerRootAssembly Include="Octokit" />
   </ItemGroup>
 
   <ItemGroup>

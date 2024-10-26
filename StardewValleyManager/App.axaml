@@ -11,6 +11,6 @@
     </Application.DataTemplates>
 
     <Application.Styles>
-		<sty:FluentAvaloniaTheme />
+		<sty:FluentAvaloniaTheme PreferSystemTheme="True" PreferUserAccentColor="True" />
     </Application.Styles>
 </Application>
