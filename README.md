@@ -1,4 +1,4 @@
-# StardewValleyManager
+# Stardew Valley Manager
 
 - [Overview](#overview)
   - [Features](#features)
