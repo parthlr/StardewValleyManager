@@ -29,7 +29,8 @@
 
 			<ui:SettingsExpander Header="GitHub"
                                  IconSource="Cloud"
-                                 Description="Settings related to your GitHub account">
+                                 Description="Settings related to your GitHub account"
+								 IsExpanded="True">
 				<ui:SettingsExpanderItem Content="Account Setup"
 										 Description="Link your GitHub account so your saves are backed up"
                                          ActionIconSource="Open">
