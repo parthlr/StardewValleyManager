@@ -6,4 +6,5 @@
 	<gitToken></gitToken>
 	<username></username>
 	<repository>StardewValleySaves</repository>
+	<defaultBranch></defaultBranch>
 </settings>

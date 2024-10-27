@@ -19,13 +19,20 @@ public class GitService
 
     private string _clientID;
 
+    private string _branchName;
+
+    private SettingsService _settingsService;
+
     public GitService(SettingsService settingsService)
     {
+        _settingsService = settingsService;
+
         AuthToken = settingsService.GetSettingsValue("gitToken");
         User = settingsService.GetSettingsValue("username");
         RepositoryName = settingsService.GetSettingsValue("repository");
 
         _clientID = settingsService.GetSettingsValue("clientID");
+        _branchName = settingsService.GetSettingsValue("defaultBranch");
 
         Client = new GitHubClient(new ProductHeaderValue("StardewValleyManager"));
 
@@ -79,6 +86,7 @@ public class GitService
             if (r.Name.Equals(RepositoryName))
             {
                 repoExists = true;
+                _branchName = r.DefaultBranch;
                 break;
             }
         }
@@ -92,12 +100,15 @@ public class GitService
                 Private = false
             };
             Repository context = await Client.Repository.Create(newRepository);
+            _branchName = context.DefaultBranch;
             System.Diagnostics.Debug.WriteLine($"New repository {RepositoryName} was created for user {User}");
         }
         else
         {
             System.Diagnostics.Debug.WriteLine($"Repository {RepositoryName} already exists for user {User}");
         }
+
+        _settingsService.UpdateSettingsValue("defaultBranch", _branchName, true);
     }
 
     public async Task CommitAllSaves(string[] Saves)
@@ -202,7 +213,7 @@ public class GitService
 
     public async Task<Commit> GetLatestCommit()
     {
-        string branchHead = "heads/master";
+        string branchHead = $"heads/{_branchName}";
 
         Reference headReference = await Client.Git.Reference.Get(User, RepositoryName, branchHead);
         Commit latestCommit = await Client.Git.Commit.Get(User, RepositoryName, headReference.Object.Sha);
@@ -255,7 +266,7 @@ public class GitService
 
         Commit commitResponse = await Client.Git.Commit.Create(User, RepositoryName, newCommit);
 
-        string branchHead = "heads/master";
+        string branchHead = $"heads/{_branchName}";
         Reference savedReference = await Client.Git.Reference.Update(User, RepositoryName, branchHead, new ReferenceUpdate(commitResponse.Sha));
 
         return savedReference;
