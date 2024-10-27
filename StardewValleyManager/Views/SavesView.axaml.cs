@@ -19,6 +19,19 @@ public partial class SavesView : UserControl
         InitializeComponent();
     }
 
+    protected override void OnLoaded(RoutedEventArgs e)
+    {
+        base.OnLoaded(e);
+
+        SaveHistoryTable.ItemsSource = new DataGridCollectionView(SaveHistoryTable.ItemsSource)
+        {
+            GroupDescriptions =
+            {
+                new DataGridPathGroupDescription("SaveSource")
+            }
+        };
+    }
+
     private void OpenSaveDetails(object? sender, RoutedEventArgs e)
     {
         Dispatcher.UIThread.Post(async () =>
